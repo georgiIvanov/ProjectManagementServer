@@ -47,5 +47,25 @@ namespace ServerApp.Controllers
             var js = Json(users);
             return users;
         }
+
+        [HttpPost]
+        public User PostUser(User user)
+        {
+            return user;
+        }
+
+        [HttpGet]
+        public User GetUser()
+        {
+            User u = new User()
+            {
+                Id = 5,
+                AuthKey = "djwadwajd1",
+                Email = "fafa@gmail.com",
+                LastLogin = DateTime.Now
+            };
+
+            return u;
+        }
     }
 }
