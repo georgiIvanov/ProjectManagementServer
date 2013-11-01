@@ -11,12 +11,12 @@ namespace ServerApp.Controllers
 {
     public class ValuesController : ApiController
     {
-        // GET api/values
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        IUoWData db;
 
+        public ValuesController(IUoWData db)
+        {
+            this.db = db;
+        }
         // GET api/values/5
         public string Get(int id)
         {
@@ -41,8 +41,8 @@ namespace ServerApp.Controllers
         [HttpGet]
         public IEnumerable<User> Haha()
         {
-            ServerDataContext db = new ServerDataContext();
-            var users = db.Users.ToList();
+           
+            var users = db.Users.All().ToList();
 
             var js = Json(users);
             return users;

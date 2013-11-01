@@ -20,5 +20,6 @@ namespace Server.Models
         public virtual string AuthKey { get; set; }
         [DataType(DataType.Date)]
         public virtual DateTime LastLogin { get; set; }
+
     }
 }

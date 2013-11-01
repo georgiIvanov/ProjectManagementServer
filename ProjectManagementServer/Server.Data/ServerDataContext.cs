@@ -11,13 +11,12 @@ namespace Server.Data
     public class ServerDataContext : DbContext
     {
         public ServerDataContext()
-            : base("LocalDbConnection")
+            : base("AppHarborSQLServer")
         {
 
         }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<UserSecret> UsersSecrets { get; set; }
-
+        public virtual IDbSet<User> Users { get; set; }
+        public virtual IDbSet<UserSecret> UsersSecrets { get; set; }
     }
 }

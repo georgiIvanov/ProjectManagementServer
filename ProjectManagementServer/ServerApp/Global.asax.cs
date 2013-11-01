@@ -26,6 +26,7 @@ namespace ServerApp
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             Database.SetInitializer<ServerDataContext>(new MigrateDatabaseToLatestVersion<ServerDataContext, Configuration>());
+
         }
     }
 }

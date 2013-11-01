@@ -46,7 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GenericRepository.cs" />
+    <Compile Include="IRepository.cs" />
+    <Compile Include="IUoWData.cs" />
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="ServerData.cs" />
     <Compile Include="ServerDataContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
