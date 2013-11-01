@@ -16,7 +16,7 @@ namespace Server.Models
         [Required]
         [StringLength(100, MinimumLength = 3)]
         public virtual string Email { get; set; }
-        [StringLength(38
+        [StringLength(40, MinimumLength=36)]
         public virtual string AuthKey { get; set; }
         [DataType(DataType.Date)]
         public virtual DateTime LastLogin { get; set; }

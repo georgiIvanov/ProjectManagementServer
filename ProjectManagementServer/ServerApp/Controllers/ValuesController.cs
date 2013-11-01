@@ -1,4 +1,5 @@
 ﻿using Server.Data;
+using Server.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,11 +39,13 @@ namespace ServerApp.Controllers
         }
 
         [HttpGet]
-        public string Haha()
+        public IEnumerable<User> Haha()
         {
             ServerDataContext db = new ServerDataContext();
-            var users = db.Users.FirstOrDefault();
-            return Json(users).ToString();
+            var users = db.Users.ToList();
+
+            var js = Json(users);
+            return users;
         }
     }
 }
