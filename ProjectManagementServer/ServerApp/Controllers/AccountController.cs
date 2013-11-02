@@ -4,7 +4,9 @@ using ServerApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Web;
+using System.Net;
 using System.Web.Http;
 
 namespace ServerApp.Controllers
@@ -57,11 +59,14 @@ namespace ServerApp.Controllers
         }
 
         [HttpPut]
-        public string Login(LoginUser logUser)
+        public HttpResponseMessage Login(LoginUser logUser)
         {
+            HttpResponseMessage responseMessage;// = new HttpResponseMessage();
+
             if (!ModelState.IsValid)
             {
-                return "Invalid credentials.";
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid credentials.");
+                return responseMessage;
             }
 
             var found = db.Users.All().FirstOrDefault(
@@ -69,7 +74,8 @@ namespace ServerApp.Controllers
 
             if (found == null)
             {
-                return "Invalid username or password.";
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid username or password.");
+                return responseMessage;
             }
 
             var secret = db.UserSecrets.All().FirstOrDefault(
@@ -77,7 +83,8 @@ namespace ServerApp.Controllers
 
             if (secret == null || secret.Usersecret != logUser.PasswordSecret)
             {
-                return "Invalid username or password.";
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid username or password.");
+                return responseMessage;
             }
 
             found.AuthKey = Guid.NewGuid().ToString();
@@ -86,7 +93,10 @@ namespace ServerApp.Controllers
             db.Users.Update(found);
             db.SaveChanges();
 
-            return found.AuthKey;
+            responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, 
+                found.AuthKey);
+            
+            return responseMessage;
         }
 	}
 }
