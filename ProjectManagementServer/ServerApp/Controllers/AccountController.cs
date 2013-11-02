@@ -58,7 +58,7 @@ namespace ServerApp.Controllers
             return newUser.AuthKey;
         }
 
-        [HttpPut]
+        [HttpPost]
         public HttpResponseMessage Login(LoginUser logUser)
         {
             HttpResponseMessage responseMessage;// = new HttpResponseMessage();
