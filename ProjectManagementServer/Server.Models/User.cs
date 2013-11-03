@@ -22,11 +22,13 @@ namespace Server.Models
         [Required]
         [StringLength(100, MinimumLength = 3)]
         public virtual string Email { get; set; }
+        [BsonIgnore]
         [StringLength(40, MinimumLength=36)]
         public virtual string AuthKey { get; set; }
+        [BsonIgnore]
         [DataType(DataType.Date)]
         public virtual DateTime LastLogin { get; set; }
-
+        [BsonIgnore]
         [StringLength(25)]
         public string MongoId { get; set; }
     }
