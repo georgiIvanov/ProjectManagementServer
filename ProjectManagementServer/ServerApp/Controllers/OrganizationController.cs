@@ -2,16 +2,14 @@
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using Server.Data;
-using Server.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
-using Newtonsoft.Json.Bson;
-using Newtonsoft.Json;
+using Server.Models.MongoDbModels;
+using System.Web.Http.ValueProviders;
+using ServerApp.Utilities;
 
 namespace ServerApp.Controllers
 {
@@ -26,7 +24,7 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
-        public HttpResponseMessage CreateOrganization(Organization organization)
+        public HttpResponseMessage CreateOrganization(Organization organization, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
 
@@ -50,12 +48,33 @@ namespace ServerApp.Controllers
             organization.UsersIdsInOrganization = new BsonDocument();
 
             organizationsCollection.Save<Organization>(organization);
-            //this.ControllerContext.Configuration.
+
             organization.ProjectsIdsInOrganization = null;
             organization.UsersIdsInOrganization = null;
+
+            CreateUserOrganizationRelation(organization, authKey);
+
             responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, organization);
 
             return responseMessage; 
+        }
+
+        private void CreateUserOrganizationRelation(Organization organization, string authKey)
+        {
+            var sqlUser = db.Users.All().Single(x => x.AuthKey == authKey);
+            var usersCollection = mongoDb.GetCollection("Users");
+
+            var mongoUser = usersCollection.FindOne(Query.EQ("_id", new ObjectId(sqlUser.MongoId)));
+
+            var usersOrganizations = mongoDb.GetCollection("UsersInOrganizations");
+
+            UsersOrganizations newRelation = new UsersOrganizations()
+            {
+                UserId = mongoUser["_id"].AsObjectId,
+                OrganizationId = organization.Id
+            };
+
+            usersOrganizations.Save(newRelation);
         }
 
     }
