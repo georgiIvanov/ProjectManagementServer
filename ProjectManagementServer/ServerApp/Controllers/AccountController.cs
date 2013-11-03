@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Web;
 using System.Net;
 using System.Web.Http;
+using MongoDB.Driver;
+using MongoDB.Driver.Builders;
 
 namespace ServerApp.Controllers
 {
@@ -55,6 +57,14 @@ namespace ServerApp.Controllers
                 User = newUser,
                 Usersecret = regUser.PasswordSecret
             };
+
+            MongoDatabase mongoDb = MongoClientFactory.GetDatabase();
+            var usersCollection = mongoDb.GetCollection("Users");
+            usersCollection.Save(newUser);
+            //var findFromMongo = usersCollection.FindOne(Query.EQ("Username", newUser.Username));
+            //newUser.MongoId = findFromMongo["_id"].AsString;
+
+            newUser.MongoId = newUser._MongoId.ToString();
 
             db.UserSecrets.Add(newUserSecret);
             db.Users.Add(newUser);

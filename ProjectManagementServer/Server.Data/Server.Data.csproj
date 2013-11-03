@@ -36,6 +36,12 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.0.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\packages\mongocsharpdriver.1.8.3\lib\net35\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\packages\mongocsharpdriver.1.8.3\lib\net35\MongoDB.Driver.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -50,6 +56,7 @@
     <Compile Include="IRepository.cs" />
     <Compile Include="IUoWData.cs" />
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="MongoClientFactory.cs" />
     <Compile Include="ServerData.cs" />
     <Compile Include="ServerDataContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
