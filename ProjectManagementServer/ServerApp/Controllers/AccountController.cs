@@ -63,7 +63,7 @@ namespace ServerApp.Controllers
             LoginResult logResult = new LoginResult()
             {
                 AuthKey = newUser.AuthKey,
-                LastLogged = newUser.LastLogin
+                LastLogged = newUser.LastLogin.ToString("yyyy-MM-dd HH:mm:ss")
             };
 
             responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
@@ -105,7 +105,7 @@ namespace ServerApp.Controllers
             LoginResult logResult = new LoginResult()
             {
                 AuthKey = found.AuthKey,
-                LastLogged = found.LastLogin
+                LastLogged = found.LastLogin.ToString("yyyy-MM-dd HH:mm:ss")
             };
 
             found.LastLogin = DateTime.Now;

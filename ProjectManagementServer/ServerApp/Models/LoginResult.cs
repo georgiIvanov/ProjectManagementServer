@@ -8,6 +8,6 @@ namespace ServerApp.Models
     public class LoginResult
     {
         public string AuthKey { get; set; }
-        public DateTime LastLogged { get; set; }
+        public string LastLogged { get; set; }
     }
 }
