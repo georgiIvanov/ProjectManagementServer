@@ -21,21 +21,26 @@ namespace ServerApp.Controllers
         }
 
         [HttpPost]
-        public string Register(RegisteredUser regUser)
+        public HttpResponseMessage Register(RegisteredUser regUser)
         {
+            HttpResponseMessage responseMessage;
+
             if (!ModelState.IsValid)
             {
-                return "Invalid credentials";
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid credentials.");
+                return responseMessage;
             }
 
             if (db.Users.All().FirstOrDefault(x => x.Email == regUser.Email) != null)
             {
-                return "User with this email already exists";
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "User with this email already exists.");
+                return responseMessage;
             }
 
             if (db.Users.All().FirstOrDefault(x => x.Username == regUser.Username) != null)
             {
-                return "Username already exists";
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Username already exists.");
+                return responseMessage;
             }
 
             User newUser = new User();
@@ -55,7 +60,16 @@ namespace ServerApp.Controllers
             db.Users.Add(newUser);
             db.SaveChanges();
 
-            return newUser.AuthKey;
+            LoginResult logResult = new LoginResult()
+            {
+                AuthKey = newUser.AuthKey,
+                LastLogged = newUser.LastLogin
+            };
+
+            responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
+                logResult);
+
+            return responseMessage;
         }
 
         [HttpPut]
@@ -88,13 +102,19 @@ namespace ServerApp.Controllers
             }
 
             found.AuthKey = Guid.NewGuid().ToString();
+            LoginResult logResult = new LoginResult()
+            {
+                AuthKey = found.AuthKey,
+                LastLogged = found.LastLogin
+            };
+
             found.LastLogin = DateTime.Now;
 
             db.Users.Update(found);
             db.SaveChanges();
 
             responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, 
-                found.AuthKey);
+                logResult);
             
             return responseMessage;
         }

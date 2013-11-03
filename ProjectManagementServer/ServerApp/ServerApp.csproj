@@ -159,6 +159,7 @@
     </Compile>
     <Compile Include="IoCClasses\NinjectResolver.cs" />
     <Compile Include="IoCClasses\NinjectScope.cs" />
+    <Compile Include="Models\LoginResult.cs" />
     <Compile Include="Models\LoginUser.cs" />
     <Compile Include="Models\RegisterUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
