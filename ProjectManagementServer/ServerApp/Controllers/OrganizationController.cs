@@ -24,11 +24,24 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
+        public HttpResponseMessage GetInvolvedOrganizations([ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            return responseMessage = new HttpResponseMessage();
+        }
+
         public HttpResponseMessage CreateOrganization(Organization organization, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
 
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || !ValidateCredentials.AuthKeyIsValid(db, authKey))
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
                 return responseMessage;
@@ -71,7 +84,8 @@ namespace ServerApp.Controllers
             UsersOrganizations newRelation = new UsersOrganizations()
             {
                 UserId = mongoUser["_id"].AsObjectId,
-                OrganizationId = organization.Id
+                OrganizationId = organization.Id,
+                Name = organization.Name
             };
 
             usersOrganizations.Save(newRelation);

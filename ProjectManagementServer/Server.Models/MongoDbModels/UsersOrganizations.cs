@@ -12,5 +12,6 @@ namespace Server.Models.MongoDbModels
         public ObjectId Id { get; set; }
         public ObjectId UserId { get; set; }
         public ObjectId OrganizationId { get; set; }
+        public string Name { get; set; }
     }
 }

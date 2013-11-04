@@ -26,6 +26,7 @@ namespace Server.Models.MongoDbModels
         [StringLength(50)]
         public string Motto { get; set; }
         //[BsonElement("vi")]
+        [StringLength(150)]
         public string OrganizationVision { get; set; }
         //[BsonElement("usersInOrg")]
         public BsonDocument UsersIdsInOrganization { get; set; }
