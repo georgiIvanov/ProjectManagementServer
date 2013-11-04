@@ -10,6 +10,7 @@ using System.Net;
 using System.Web.Http;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using ServerApp.Utilities;
 
 namespace ServerApp.Controllers
 {
@@ -59,7 +60,7 @@ namespace ServerApp.Controllers
             };
 
             MongoDatabase mongoDb = MongoClientFactory.GetDatabase();
-            var usersCollection = mongoDb.GetCollection("Users");
+            var usersCollection = mongoDb.GetCollection(MongoCollections.Users);
             usersCollection.Save(newUser);
             //var findFromMongo = usersCollection.FindOne(Query.EQ("Username", newUser.Username));
             //newUser.MongoId = findFromMongo["_id"].AsString;

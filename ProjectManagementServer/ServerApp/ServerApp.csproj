@@ -173,6 +173,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\HeaderValueProvider.cs" />
     <Compile Include="Utilities\HeaderValueProviderFactory.cs" />
+    <Compile Include="Utilities\MongoCollections.cs" />
     <Compile Include="Utilities\ValidateCredentials.cs" />
   </ItemGroup>
   <ItemGroup>

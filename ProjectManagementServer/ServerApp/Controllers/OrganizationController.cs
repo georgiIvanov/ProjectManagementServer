@@ -41,7 +41,7 @@ namespace ServerApp.Controllers
             var userMongoId = db.Users.All().Single(x => x.AuthKey == authKey).MongoId;
             
 
-            var usersAndOrganizations = mongoDb.GetCollection("UsersInOrganizations");
+            var usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
 
             List<OgranizationListEntry> found = (from o in usersAndOrganizations.AsQueryable<UsersOrganizations>()
                          where o.UserId == new ObjectId(userMongoId)
@@ -64,7 +64,7 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            var organizationsCollection = mongoDb.GetCollection("Organizations");
+            var organizationsCollection = mongoDb.GetCollection(MongoCollections.Organizations);
 
             var alreadyExists = organizationsCollection.FindAs<Organization>(Query.EQ("Name", organization.Name)).Count();
             if (alreadyExists > 0)
@@ -92,11 +92,11 @@ namespace ServerApp.Controllers
         private void CreateUserOrganizationRelation(Organization organization, string authKey)
         {
             var sqlUser = db.Users.All().Single(x => x.AuthKey == authKey);
-            var usersCollection = mongoDb.GetCollection("Users");
+            var usersCollection = mongoDb.GetCollection(MongoCollections.Users);
 
             var mongoUser = usersCollection.FindOne(Query.EQ("_id", new ObjectId(sqlUser.MongoId)));
 
-            var usersOrganizations = mongoDb.GetCollection("UsersInOrganizations");
+            var usersOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
 
             UsersOrganizations newRelation = new UsersOrganizations()
             {
