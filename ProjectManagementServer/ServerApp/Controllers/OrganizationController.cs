@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using MongoDB.Driver.Linq;
 using Server.Data;
 using System;
 using System.Linq;
@@ -10,6 +11,8 @@ using System.Web.Http;
 using Server.Models.MongoDbModels;
 using System.Web.Http.ValueProviders;
 using ServerApp.Utilities;
+using System.Collections.Generic;
+using ServerApp.Models.MongoViewModels;
 
 namespace ServerApp.Controllers
 {
@@ -24,6 +27,7 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
+        [HttpGet]
         public HttpResponseMessage GetInvolvedOrganizations([ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
@@ -34,7 +38,20 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            return responseMessage = new HttpResponseMessage();
+            var userMongoId = db.Users.All().Single(x => x.AuthKey == authKey).MongoId;
+            
+
+            var usersAndOrganizations = mongoDb.GetCollection("UsersInOrganizations");
+
+            List<OgranizationListEntry> found = (from o in usersAndOrganizations.AsQueryable<UsersOrganizations>()
+                         where o.UserId == new ObjectId(userMongoId)
+                         select new OgranizationListEntry(){
+                           Name =   o.Name,
+                           OrganizationId = o.OrganizationId
+                         }).ToList();
+
+            return responseMessage = this.Request.CreateResponse(
+                HttpStatusCode.OK, found);
         }
 
         public HttpResponseMessage CreateOrganization(Organization organization, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
