@@ -51,7 +51,7 @@ namespace ServerApp.Controllers
                          }).ToList();
 
             return responseMessage = this.Request.CreateResponse(
-                HttpStatusCode.OK, found);
+                HttpStatusCode.OK, new { Organizations = found });
         }
 
         public HttpResponseMessage CreateOrganization(Organization organization, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
