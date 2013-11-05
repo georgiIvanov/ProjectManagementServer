@@ -21,7 +21,7 @@ namespace ServerApp.Controllers
     {
         IUoWData db;
         MongoDatabase mongoDb;
-        
+
         public OrganizationController(IUoWData db)
         {
             this.db = db;
@@ -42,7 +42,7 @@ namespace ServerApp.Controllers
             var organizations = mongoDb.GetCollection(MongoCollections.Organizations);
             var queriedOrganization = organizations.AsQueryable<Organization>()
                                         .FirstOrDefault(x => x.Name == organizationName);
-            if(queriedOrganization == null)
+            if (queriedOrganization == null)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid name.");
                 return responseMessage;
@@ -70,7 +70,11 @@ namespace ServerApp.Controllers
                                 .Count(x => x.OrganizationId == queriedOrganization.Id);
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
-            new { Employees = employeesCount, Projects=projectsInOrganization });
+            new
+            {
+                Employees = employeesCount.ToString(),
+                Projects = projectsInOrganization.ToString()
+            });
         }
 
         [HttpGet]
@@ -85,16 +89,17 @@ namespace ServerApp.Controllers
             }
 
             var userMongoId = db.Users.All().Single(x => x.AuthKey == authKey).MongoId;
-            
+
 
             var usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
 
             List<OgranizationListEntry> found = (from o in usersAndOrganizations.AsQueryable<UsersOrganizations>()
-                         where o.UserId == new ObjectId(userMongoId)
-                         select new OgranizationListEntry(){
-                           Name =   o.Name,
-                           OrganizationId = o.OrganizationId
-                         }).ToList();
+                                                 where o.UserId == new ObjectId(userMongoId)
+                                                 select new OgranizationListEntry()
+                                                 {
+                                                     Name = o.Name,
+                                                     OrganizationId = o.OrganizationId
+                                                 }).ToList();
 
             return responseMessage = this.Request.CreateResponse(
                 HttpStatusCode.OK, new { Organizations = found });
@@ -132,7 +137,7 @@ namespace ServerApp.Controllers
 
             responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, organization);
 
-            return responseMessage; 
+            return responseMessage;
         }
 
         private void CreateUserOrganizationRelation(Organization organization, string authKey, UserRoles role)
