@@ -14,6 +14,7 @@ using ServerApp.Utilities;
 using System.Collections.Generic;
 using ServerApp.Models.MongoViewModels;
 using Server.Models;
+using System.Text;
 
 namespace ServerApp.Controllers
 {
@@ -29,6 +30,43 @@ namespace ServerApp.Controllers
         }
 
         [HttpGet]
+        public HttpResponseMessage RecentEvents(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var queriedOrganization = CheckOrganizationName(organizationName);
+            if (queriedOrganization == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid name.");
+                return responseMessage;
+            }
+
+            MongoCollection<BsonDocument> usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
+            UsersOrganizations foundUser;
+            CheckUser(authKey, queriedOrganization, usersAndOrganizations, out foundUser, UserRoles.OrganizationManager);
+
+            if (foundUser == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Insufficient permissions.");
+                return responseMessage;
+            }
+
+            StringBuilder recentEvents = new StringBuilder();
+
+            recentEvents.AppendLine("haha");
+            recentEvents.AppendLine("hehe");
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
+            new { Events = recentEvents.ToString()});
+        }
+
+        [HttpGet]
         public HttpResponseMessage GetFullInfo(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
@@ -39,22 +77,17 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            var organizations = mongoDb.GetCollection(MongoCollections.Organizations);
-            var queriedOrganization = organizations.AsQueryable<Organization>()
-                                        .FirstOrDefault(x => x.Name == organizationName);
+            var queriedOrganization = CheckOrganizationName(organizationName);
             if (queriedOrganization == null)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid name.");
                 return responseMessage;
             }
 
-            var userMongoId = db.Users.All().Single(x => x.AuthKey == authKey).MongoId;
+            MongoCollection<BsonDocument> usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
 
-            var usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
-
-            var foundUser = usersAndOrganizations.AsQueryable<UsersOrganizations>()
-                .FirstOrDefault(x => x.Role >= UserRoles.OrganizationManager &&
-                    x.UserId == new ObjectId(userMongoId) && x.Name == queriedOrganization.Name);
+            UsersOrganizations foundUser;
+            CheckUser(authKey, queriedOrganization, usersAndOrganizations, out foundUser, UserRoles.OrganizationManager);
 
             if (foundUser == null)
             {
@@ -75,6 +108,23 @@ namespace ServerApp.Controllers
                 Employees = employeesCount.ToString(),
                 Projects = projectsInOrganization.ToString()
             });
+        }
+
+        private void CheckUser(string authKey, Organization queriedOrganization, MongoCollection<BsonDocument> usersAndOrganizations, out UsersOrganizations foundUser, UserRoles role)
+        {
+            var userMongoId = db.Users.All().Single(x => x.AuthKey == authKey).MongoId;
+
+            foundUser = usersAndOrganizations.AsQueryable<UsersOrganizations>()
+.FirstOrDefault(x => x.Role >= role &&
+    x.UserId == new ObjectId(userMongoId) && x.Name == queriedOrganization.Name);
+        }
+
+        private Organization CheckOrganizationName(string organizationName)
+        {
+            var organizations = mongoDb.GetCollection(MongoCollections.Organizations);
+            var queriedOrganization = organizations.AsQueryable<Organization>()
+                                        .FirstOrDefault(x => x.Name == organizationName);
+            return queriedOrganization;
         }
 
         [HttpGet]
