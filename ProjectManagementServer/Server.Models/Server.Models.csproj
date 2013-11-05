@@ -54,6 +54,7 @@
     <Compile Include="MongoDbModels\Organization.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserRoles.cs" />
     <Compile Include="UserSecret.cs" />
   </ItemGroup>
   <ItemGroup>

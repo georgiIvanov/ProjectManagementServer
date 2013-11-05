@@ -13,6 +13,7 @@ using System.Web.Http.ValueProviders;
 using ServerApp.Utilities;
 using System.Collections.Generic;
 using ServerApp.Models.MongoViewModels;
+using Server.Models;
 
 namespace ServerApp.Controllers
 {
@@ -25,6 +26,14 @@ namespace ServerApp.Controllers
         {
             this.db = db;
             this.mongoDb = MongoClientFactory.GetDatabase();
+        }
+
+        [HttpGet]
+        HttpResponseMessage GetFullInfoAboutOrganization(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+
+            return responseMessage = new HttpResponseMessage();
         }
 
         [HttpGet]
@@ -82,14 +91,14 @@ namespace ServerApp.Controllers
             organization.ProjectsIdsInOrganization = null;
             organization.UsersIdsInOrganization = null;
 
-            CreateUserOrganizationRelation(organization, authKey);
+            CreateUserOrganizationRelation(organization, authKey, UserRoles.OrganizationOwner);
 
             responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, organization);
 
             return responseMessage; 
         }
 
-        private void CreateUserOrganizationRelation(Organization organization, string authKey)
+        private void CreateUserOrganizationRelation(Organization organization, string authKey, UserRoles role)
         {
             var sqlUser = db.Users.All().Single(x => x.AuthKey == authKey);
             var usersCollection = mongoDb.GetCollection(MongoCollections.Users);
@@ -102,7 +111,8 @@ namespace ServerApp.Controllers
             {
                 UserId = mongoUser["_id"].AsObjectId,
                 OrganizationId = organization.Id,
-                Name = organization.Name
+                Name = organization.Name,
+                Role = role
             };
 
             usersOrganizations.Save(newRelation);
