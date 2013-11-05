@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MongoDbModels\Project.cs" />
     <Compile Include="MongoDbModels\UsersOrganizations.cs" />
     <Compile Include="ObjectIdConverter.cs" />
     <Compile Include="MongoDbModels\Organization.cs" />

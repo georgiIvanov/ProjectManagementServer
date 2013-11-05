@@ -14,6 +14,11 @@ namespace ServerApp
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+            //config.Routes.MapHttpRoute(
+            //    name: "Attributes",
+            //    routeTemplate: "api/{controller}/{action}/"
+            //);
+
             config.Routes.MapHttpRoute(
                 name: "Services",
                 routeTemplate: "api/{controller}/{action}/{id}",

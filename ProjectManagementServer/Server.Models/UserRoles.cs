@@ -10,6 +10,8 @@ namespace Server.Models
         OrganizationOwner = 50,
         OrganizationManager = 30,
         TeamManager = 20,
-        Employee = 10
+        SeniorEmployee = 15,
+        Employee = 10,
+        JuniorEmployee = 5
     }
 }

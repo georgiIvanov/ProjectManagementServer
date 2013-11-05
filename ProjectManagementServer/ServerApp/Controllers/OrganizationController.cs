@@ -29,7 +29,7 @@ namespace ServerApp.Controllers
         }
 
         [HttpGet]
-        HttpResponseMessage GetFullInfoAboutOrganization(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        public HttpResponseMessage GetFullInfo(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
 
@@ -39,9 +39,38 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
+            var organizations = mongoDb.GetCollection(MongoCollections.Organizations);
+            var queriedOrganization = organizations.AsQueryable<Organization>()
+                                        .FirstOrDefault(x => x.Name == organizationName);
+            if(queriedOrganization == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid name.");
+                return responseMessage;
+            }
+
             var userMongoId = db.Users.All().Single(x => x.AuthKey == authKey).MongoId;
 
-            return responseMessage = new HttpResponseMessage();
+            var usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
+
+            var foundUser = usersAndOrganizations.AsQueryable<UsersOrganizations>()
+                .FirstOrDefault(x => x.Role >= UserRoles.OrganizationManager &&
+                    x.UserId == new ObjectId(userMongoId) && x.Name == queriedOrganization.Name);
+
+            if (foundUser == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Insufficient permissions.");
+                return responseMessage;
+            }
+
+            var projectsCollection = mongoDb.GetCollection(MongoCollections.Projects);
+
+            int projectsInOrganization = projectsCollection.AsQueryable<Project>()
+                                        .Count(x => x.OrganizationId == queriedOrganization.Id);
+            int employeesCount = usersAndOrganizations.AsQueryable<UsersOrganizations>()
+                                .Count(x => x.OrganizationId == queriedOrganization.Id);
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
+            new { Employees = employeesCount, Projects=projectsInOrganization });
         }
 
         [HttpGet]
