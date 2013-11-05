@@ -33,6 +33,14 @@ namespace ServerApp.Controllers
         {
             HttpResponseMessage responseMessage;
 
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var userMongoId = db.Users.All().Single(x => x.AuthKey == authKey).MongoId;
+
             return responseMessage = new HttpResponseMessage();
         }
 

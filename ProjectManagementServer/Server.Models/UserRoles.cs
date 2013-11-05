@@ -7,9 +7,9 @@ namespace Server.Models
 {
     public enum UserRoles
     {
-        OrganizationOwner = 1,
-        OrganizationManager = 2,
-        TeamManager = 3,
-        Employee = 4
+        OrganizationOwner = 50,
+        OrganizationManager = 30,
+        TeamManager = 20,
+        Employee = 10
     }
 }

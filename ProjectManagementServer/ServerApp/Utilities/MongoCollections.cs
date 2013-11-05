@@ -25,5 +25,10 @@ namespace ServerApp.Utilities
             set { }
         }
 
+        public static string Projects
+        {
+            get { return "Projects"; }
+            set { }
+        }
     }
 }
