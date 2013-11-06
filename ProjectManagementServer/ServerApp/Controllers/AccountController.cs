@@ -104,7 +104,7 @@ namespace ServerApp.Controllers
             }
 
             var secret = db.UserSecrets.All().FirstOrDefault(
-                x => x.Usersecret == logUser.PasswordSecret);
+                x => x.Usersecret == logUser.PasswordSecret && x.User.Id == found.Id);
 
             if (secret == null || secret.Usersecret != logUser.PasswordSecret)
             {
