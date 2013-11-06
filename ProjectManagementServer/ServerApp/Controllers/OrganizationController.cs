@@ -74,7 +74,8 @@ namespace ServerApp.Controllers
             invitationsCollection.Save(invitation);
             
 
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, "Invitation sent.");
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
+                new { Message = "Invitation sent." });
         }
 
         [HttpGet]
