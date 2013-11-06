@@ -31,5 +31,10 @@ namespace Server.Models
         [BsonIgnore]
         [StringLength(25)]
         public string MongoId { get; set; }
+
+        public User()
+        {
+
+        }
     }
 }

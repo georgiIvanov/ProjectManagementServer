@@ -30,5 +30,11 @@ namespace ServerApp.Utilities
             get { return "Projects"; }
             set { }
         }
+
+        public static string Invitations
+        {
+            get { return "Invitations"; }
+            set { }
+        }
     }
 }

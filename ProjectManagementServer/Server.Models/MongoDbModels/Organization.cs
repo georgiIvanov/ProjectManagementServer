@@ -34,5 +34,9 @@ namespace Server.Models.MongoDbModels
         public BsonDocument ProjectsIdsInOrganization { get; set; }
         //[BsonElement("createdOn")]
         public DateTime DateCreated { get; set; }
+
+        public Organization()
+        {
+        }
     }
 }
