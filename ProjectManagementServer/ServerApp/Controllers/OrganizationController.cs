@@ -75,7 +75,7 @@ namespace ServerApp.Controllers
             
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
-                new { Message = "Invitation sent." });
+                new { Success = "Invitation sent." });
         }
 
         [HttpGet]
