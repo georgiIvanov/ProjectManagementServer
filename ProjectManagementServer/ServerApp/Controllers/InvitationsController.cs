@@ -183,8 +183,6 @@ namespace ServerApp.Controllers
             var invitationsCollection = mongoDb.GetCollection(MongoCollections.Invitations);
             //todo check if invitation already exists
             invitation.InvitedUserId = invited._MongoId;
-            //username or email is unneeded
-            invitation.InvitedUser = "";
             invitationsCollection.Save(invitation);
 
 
