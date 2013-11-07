@@ -113,7 +113,7 @@ namespace ServerApp.Controllers
                 .Where(x => x.InvitedUserId == new ObjectId(user.MongoId)).Count();
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
-                new { InvitationsCount = foundInvitations });
+                new { InvitationsCount = foundInvitations.ToString() });
         }
         
         [HttpGet]
