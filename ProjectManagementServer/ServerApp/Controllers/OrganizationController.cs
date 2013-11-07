@@ -29,54 +29,7 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
-        [HttpPost]
-        public HttpResponseMessage InviteToOrganization(Invitation invitation, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
-        {
-            HttpResponseMessage responseMessage;
-
-            if (!ValidateCredentials.AuthKeyIsValid(db, authKey))
-            {
-                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
-                return responseMessage;
-            }
-
-            var queriedOrganization = CheckOrganizationName(invitation.OrganizationName);
-            if (queriedOrganization == null)
-            {
-                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid organization name.");
-                return responseMessage;
-            }
-
-            MongoCollection<BsonDocument> usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
-            UsersOrganizations invitator;
-            CheckUser(authKey, queriedOrganization, usersAndOrganizations, out invitator, UserRoles.OrganizationManager);
-
-            if (invitator == null)
-            {
-                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Insufficient permissions.");
-                return responseMessage;
-            }
-
-            MongoCollection users = mongoDb.GetCollection(MongoCollections.Users);
-            User invited;
-            FindPersonalProfile(out invited, users, invitation.InvitedUser.ToLower());
-            if (invited == null)
-            {
-                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "User does not exist");
-                return responseMessage;
-            }
-
-            var invitationsCollection = mongoDb.GetCollection(MongoCollections.Invitations);
-            //todo check if invitation already exists
-            invitation.InvitedUserId = invited._MongoId;
-            //username or email is unneeded
-            invitation.InvitedUser = "";
-            invitationsCollection.Save(invitation);
-            
-
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
-                new { Success = "Invitation sent." });
-        }
+        
 
         [HttpGet]
         public HttpResponseMessage RecentEvents(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
@@ -89,7 +42,7 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            var queriedOrganization = CheckOrganizationName(organizationName);
+            var queriedOrganization = GenericQueries.CheckOrganizationName(organizationName, mongoDb);
             if (queriedOrganization == null)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid name.");
@@ -98,7 +51,7 @@ namespace ServerApp.Controllers
 
             MongoCollection<BsonDocument> usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
             UsersOrganizations foundUser;
-            CheckUser(authKey, queriedOrganization, usersAndOrganizations, out foundUser, UserRoles.OrganizationManager);
+            GenericQueries.CheckUser(authKey, queriedOrganization, usersAndOrganizations, out foundUser, UserRoles.OrganizationManager, db);
 
             if (foundUser == null)
             {
@@ -126,7 +79,7 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            var queriedOrganization = CheckOrganizationName(organizationName);
+            var queriedOrganization = GenericQueries.CheckOrganizationName(organizationName, mongoDb);
             if (queriedOrganization == null)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid name.");
@@ -136,7 +89,7 @@ namespace ServerApp.Controllers
             MongoCollection<BsonDocument> usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
 
             UsersOrganizations foundUser;
-            CheckUser(authKey, queriedOrganization, usersAndOrganizations, out foundUser, UserRoles.OrganizationManager);
+            GenericQueries.CheckUser(authKey, queriedOrganization, usersAndOrganizations, out foundUser, UserRoles.OrganizationManager, db);
 
             if (foundUser == null)
             {
@@ -159,27 +112,7 @@ namespace ServerApp.Controllers
             });
         }
 
-        private void FindPersonalProfile(out User user, MongoCollection usersCollection, string invitedUser)
-        {
-            user = usersCollection.AsQueryable<User>().FirstOrDefault(x => x.Email.ToLower() == invitedUser || x.Username.ToLower() == invitedUser);
-        }
-
-        private void CheckUser(string authKey, Organization queriedOrganization, MongoCollection<BsonDocument> usersAndOrganizations, out UsersOrganizations foundUser, UserRoles role)
-        {
-            var userMongoId = db.Users.All().Single(x => x.AuthKey == authKey).MongoId;
-
-            foundUser = usersAndOrganizations.AsQueryable<UsersOrganizations>()
-.FirstOrDefault(x => x.Role >= role &&
-    x.UserId == new ObjectId(userMongoId) && x.Name == queriedOrganization.Name);
-        }
-
-        private Organization CheckOrganizationName(string organizationName)
-        {
-            var organizations = mongoDb.GetCollection(MongoCollections.Organizations);
-            var queriedOrganization = organizations.AsQueryable<Organization>()
-                                        .FirstOrDefault(x => x.Name == organizationName);
-            return queriedOrganization;
-        }
+       
 
         [HttpGet]
         public HttpResponseMessage GetInvolvedOrganizations([ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
