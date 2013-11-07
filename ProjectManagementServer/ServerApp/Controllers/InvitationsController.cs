@@ -31,6 +31,119 @@ namespace ServerApp.Controllers
         }
 
         [HttpPost]
+        public HttpResponseMessage RejectInvitation(InvitationViewModel rejectedInvitaion, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var user = db.Users.All().Single(x => x.AuthKey == authKey);
+
+            var invitations = mongoDb.GetCollection(MongoCollections.Invitations);
+
+            var foundInvitation = FindInvitation(rejectedInvitaion, user, invitations);
+            if (foundInvitation == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid invitation.");
+                return responseMessage;
+            }
+
+            invitations.Remove(Query.EQ("_id", foundInvitation.Id));
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
+                new { Removed = "Success" });
+        }
+
+        
+
+        [HttpPost]
+        public HttpResponseMessage AcceptInvitation(InvitationViewModel acceptedInvitaion, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var user = db.Users.All().Single(x => x.AuthKey == authKey);
+
+            var invitations = mongoDb.GetCollection(MongoCollections.Invitations);
+
+            var foundInvitation = FindInvitation(acceptedInvitaion, user, invitations);
+            if (foundInvitation == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid invitation.");
+                return responseMessage;
+            }
+
+            var organizations = mongoDb.GetCollection(MongoCollections.Organizations);
+
+            var organization = organizations.FindOneAs<Organization>(Query.EQ("Name", foundInvitation.OrganizationName));
+
+            CreateUserOrganizationRelation(organization, user, UserRoles.JuniorEmployee, mongoDb);
+
+            invitations.Remove(Query.EQ("_id", foundInvitation.Id));
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
+                new { Success = "Success" });
+        }
+
+        [HttpGet]
+        public HttpResponseMessage CheckForInvitations([ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var user = db.Users.All().Single(x => x.AuthKey == authKey);
+
+            var invitations = mongoDb.GetCollection(MongoCollections.Invitations);
+
+            var foundInvitations = invitations.AsQueryable<Invitation>()
+                .Where(x => x.InvitedUserId == new ObjectId(user.MongoId)).Count();
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
+                new { InvitationsCount = foundInvitations });
+        }
+        
+        [HttpGet]
+        public HttpResponseMessage SeeInvitations([ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var user = db.Users.All().Single(x => x.AuthKey == authKey);
+
+            var invitations = mongoDb.GetCollection(MongoCollections.Invitations);
+
+            var foundInvitations = invitations.AsQueryable<Invitation>()
+                .Where(x => x.InvitedUserId == new ObjectId(user.MongoId))
+                .Select(x => new InvitationViewModel()
+                {
+                    Id = x.Id.ToString(),
+                    OrganizationName = x.OrganizationName
+                });
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
+                new { Invitations = foundInvitations });
+        }
+
+        [HttpPost]
         public HttpResponseMessage InviteToOrganization(Invitation invitation, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
@@ -79,6 +192,31 @@ namespace ServerApp.Controllers
                 new { Success = "Invitation sent." });
         }
 
-       
+        private void CreateUserOrganizationRelation(Organization organization, User sqlUser, UserRoles role, MongoDatabase mongoDb)
+        {
+            var usersCollection = mongoDb.GetCollection(MongoCollections.Users);
+
+            var mongoUser = usersCollection.FindOne(Query.EQ("_id", new ObjectId(sqlUser.MongoId)));
+
+            var usersOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
+
+            UsersOrganizations newRelation = new UsersOrganizations()
+            {
+                UserId = mongoUser["_id"].AsObjectId,
+                OrganizationId = organization.Id,
+                Name = organization.Name,
+                Role = role
+            };
+
+            usersOrganizations.Save(newRelation);
+        }
+
+        private static Invitation FindInvitation(InvitationViewModel invitaion, Server.Models.User user, MongoCollection<BsonDocument> invitations)
+        {
+            var foundInvitation = invitations.AsQueryable<Invitation>()
+                .FirstOrDefault(x => x.InvitedUserId == new ObjectId(user.MongoId) &&
+                    x.Id == new ObjectId(invitaion.Id));
+            return foundInvitation;
+        }
     }
 }

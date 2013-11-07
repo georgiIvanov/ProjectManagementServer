@@ -41,5 +41,44 @@ namespace ServerApp.Utilities
                                         .FirstOrDefault(x => x.Name == organizationName);
             return queriedOrganization;
         }
+
+        internal static void CreateUserOrganizationRelation(Organization organization, string authKey, UserRoles role, IUoWData db, MongoDatabase mongoDb)
+        {
+            var sqlUser = db.Users.All().Single(x => x.AuthKey == authKey);
+            var usersCollection = mongoDb.GetCollection(MongoCollections.Users);
+
+            var mongoUser = usersCollection.FindOne(Query.EQ("_id", new ObjectId(sqlUser.MongoId)));
+
+            var usersOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
+
+            UsersOrganizations newRelation = new UsersOrganizations()
+            {
+                UserId = mongoUser["_id"].AsObjectId,
+                OrganizationId = organization.Id,
+                Name = organization.Name,
+                Role = role
+            };
+
+            usersOrganizations.Save(newRelation);
+        }
+
+        internal static void CreateUserOrganizationRelation(Organization organization, User sqlUser, UserRoles role, MongoDatabase mongoDb)
+        {
+            var usersCollection = mongoDb.GetCollection(MongoCollections.Users);
+
+            var mongoUser = usersCollection.FindOne(Query.EQ("_id", new ObjectId(sqlUser.MongoId)));
+
+            var usersOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
+
+            UsersOrganizations newRelation = new UsersOrganizations()
+            {
+                UserId = mongoUser["_id"].AsObjectId,
+                OrganizationId = organization.Id,
+                Name = organization.Name,
+                Role = role
+            };
+
+            usersOrganizations.Save(newRelation);
+        }
     }
 }

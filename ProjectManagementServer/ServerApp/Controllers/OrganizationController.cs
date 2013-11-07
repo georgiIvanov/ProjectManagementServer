@@ -30,6 +30,7 @@ namespace ServerApp.Controllers
         }
 
         
+        
 
         [HttpGet]
         public HttpResponseMessage RecentEvents(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
@@ -170,32 +171,14 @@ namespace ServerApp.Controllers
             organization.ProjectsIdsInOrganization = null;
             organization.UsersIdsInOrganization = null;
 
-            CreateUserOrganizationRelation(organization, authKey, UserRoles.OrganizationOwner);
+            GenericQueries.CreateUserOrganizationRelation(organization, authKey, UserRoles.OrganizationOwner, db, mongoDb);
 
             responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, organization);
 
             return responseMessage;
         }
 
-        private void CreateUserOrganizationRelation(Organization organization, string authKey, UserRoles role)
-        {
-            var sqlUser = db.Users.All().Single(x => x.AuthKey == authKey);
-            var usersCollection = mongoDb.GetCollection(MongoCollections.Users);
-
-            var mongoUser = usersCollection.FindOne(Query.EQ("_id", new ObjectId(sqlUser.MongoId)));
-
-            var usersOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
-
-            UsersOrganizations newRelation = new UsersOrganizations()
-            {
-                UserId = mongoUser["_id"].AsObjectId,
-                OrganizationId = organization.Id,
-                Name = organization.Name,
-                Role = role
-            };
-
-            usersOrganizations.Save(newRelation);
-        }
+        
 
     }
 }
