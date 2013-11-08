@@ -9,7 +9,7 @@ namespace Server.Models
     {
         OrganizationOwner = 50,
         OrganizationManager = 30,
-        TeamManager = 20,
+        ProjectManager = 20,
         SeniorEmployee = 15,
         Employee = 10,
         JuniorEmployee = 5
