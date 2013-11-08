@@ -91,7 +91,7 @@ namespace ServerApp.Controllers
             invitations.Remove(Query.EQ("_id", foundInvitation.Id));
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
-                new { Success = "Success" });
+                new { Accepted = "Success" });
         }
 
         [HttpGet]
