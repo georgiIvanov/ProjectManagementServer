@@ -13,5 +13,7 @@ namespace ServerApp.Models.MongoViewModels
         [JsonConverter(typeof(ObjectIdConverter))]
         public ObjectId OrganizationId { get; set; }
         public string Name { get; set; }
+
+        public UserRoles Role { get; set; }
     }
 }

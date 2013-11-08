@@ -136,7 +136,8 @@ namespace ServerApp.Controllers
                                                  select new OgranizationListEntry()
                                                  {
                                                      Name = o.Name,
-                                                     OrganizationId = o.OrganizationId
+                                                     OrganizationId = o.OrganizationId,
+                                                     Role = o.Role
                                                  }).ToList();
 
             return responseMessage = this.Request.CreateResponse(
