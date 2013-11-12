@@ -101,7 +101,7 @@ namespace ServerApp.Controllers
             var projectsCollection = mongoDb.GetCollection(MongoCollections.Projects);
 
             int projectsInOrganization = projectsCollection.AsQueryable<Project>()
-                                        .Count(x => x.OrganizationId == queriedOrganization.Id);
+                                        .Count(x => x.OrganizationName == queriedOrganization.Name);
             int employeesCount = usersAndOrganizations.AsQueryable<UsersOrganizations>()
                                 .Count(x => x.OrganizationId == queriedOrganization.Id);
 

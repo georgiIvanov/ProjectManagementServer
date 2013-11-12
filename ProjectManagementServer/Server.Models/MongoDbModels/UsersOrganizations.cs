@@ -17,7 +17,7 @@ namespace Server.Models.MongoDbModels
         [JsonConverter(typeof(ObjectIdConverter))]
         public ObjectId OrganizationId { get; set; }
         public string Name { get; set; }
-
+        public string Username { get; set; }
         public UserRoles Role { get; set; }
     }
 }

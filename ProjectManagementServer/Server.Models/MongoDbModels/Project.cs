@@ -13,8 +13,7 @@ namespace Server.Models.MongoDbModels
     {
         [JsonConverter(typeof(ObjectIdConverter))]
         public ObjectId Id { get; set; }
-        [JsonConverter(typeof(ObjectIdConverter))]
-        public ObjectId OrganizationId { get; set; }
+        public string OrganizationName { get; set; }
         [Required]
         [StringLength(100, MinimumLength=1)]
         public string Name { get; set; }
