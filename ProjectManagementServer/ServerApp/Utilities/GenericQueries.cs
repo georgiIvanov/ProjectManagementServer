@@ -53,7 +53,7 @@ namespace ServerApp.Utilities
 
             UsersOrganizations newRelation = new UsersOrganizations()
             {
-                UserId = new ObjectId(mongoUser.MongoId),
+                UserId = mongoUser._MongoId,
                 OrganizationId = organization.Id,
                 Name = organization.Name,
                 Username = mongoUser.Username,
