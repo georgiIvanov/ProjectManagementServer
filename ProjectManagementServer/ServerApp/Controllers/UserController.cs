@@ -57,29 +57,58 @@ namespace ServerApp.Controllers
             //var usersInOrganization = usersAndOrganizations.Find(Query.EQ("_id", queriedOrganization.Id)).ToList();
 
             var usersInOrganization = (from us in usersAndOrganizations.AsQueryable<UsersOrganizations>()
-                                       where us.OrganizationId == queriedOrganization.Id
-                                       select new UsersInOrganizationVM()
-                                       {
-                                           Role = us.Role,
-                                           Username = us.Username
-                                       });
+                                                               where us.OrganizationId == queriedOrganization.Id
+                                                               select new UsersInOrganizationVM()
+                                                               {
+                                                                   Role = us.Role,
+                                                                   Username = us.Username
+                                                               }).ToList();
 
-            //    .Select(x => new UsersInOrganizationVM()
-            //{
-            //    Role = (UserRoles)x.GetValue("Role").AsInt32
-            //});
+           //var usersInOrganization = usersAndOrganizations.FindAs<UsersInOrganizationVM>(Query.EQ("OrganizationId", queriedOrganization.Id)).Select(x => new UsersInOrganizationVM()
+           // {
+           //     Role = x.Role,
+           //     Username = x.Username
+           // });
 
-            //var returned = (from us in usersAndOrganizations
-            //                select new UsersInOrganizationVM()
-            //                {
-            //                    Username = us.Username,
-            //                    Role = us.Role
-            //                });
-            
+            Dictionary<string,List<UsersInOrganizationVM>> grouped = new Dictionary<string, List<UsersInOrganizationVM>>();
+
+            foreach (var item in usersInOrganization)
+            {
+                string stringRole = ConvertRoleToString(item.Role);
+                if (grouped.ContainsKey(stringRole))
+                {
+                    grouped[stringRole].Add(item);
+                }
+                else
+                {
+                    grouped.Add(stringRole, new List<UsersInOrganizationVM>());
+                    grouped[stringRole].Add(item);
+                }
+            }
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
-                new { Users = usersInOrganization });
+                new { Keys = grouped.Keys, Users = grouped });
 
         }
+
+        private string ConvertRoleToString(UserRoles userRole)
+        {
+            string role;
+            switch(userRole)
+            {
+                case UserRoles.JuniorEmployee: role = "JuniorEmployee"; break;
+                case UserRoles.Employee: role = "Employee"; break;
+                case UserRoles.SeniorEmployee: role = "SeniorEmployee"; break;
+                case UserRoles.ProjectManager: role = "ProjectManager"; break;
+                case UserRoles.OrganizationManager: role = "OrganizationManager"; break;
+                case UserRoles.OrganizationOwner: role = "OrganizationOwner"; break;
+                default:
+                    throw new ArgumentException("Invalid role");
+                    
+            };
+
+            return role;
+        }
+
     }
 }
