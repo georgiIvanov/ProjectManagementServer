@@ -10,8 +10,8 @@ namespace ServerApp.Models.MongoViewModels
 {
     public class UsersInOrganizationVM
     {
-        [JsonConverter(typeof(ObjectIdConverter))]
-        public ObjectId Id { get; set; }
+        //[JsonConverter(typeof(ObjectIdConverter))]
+        //public ObjectId Id { get; set; }
         public string Username { get; set; }
         public UserRoles Role { get; set; }
     }

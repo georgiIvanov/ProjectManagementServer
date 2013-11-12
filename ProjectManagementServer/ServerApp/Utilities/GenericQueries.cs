@@ -47,15 +47,16 @@ namespace ServerApp.Utilities
             var sqlUser = db.Users.All().Single(x => x.AuthKey == authKey);
             var usersCollection = mongoDb.GetCollection(MongoCollections.Users);
 
-            var mongoUser = usersCollection.FindOne(Query.EQ("_id", new ObjectId(sqlUser.MongoId)));
+            var mongoUser = usersCollection.FindOneAs<User>(Query.EQ("_id", new ObjectId(sqlUser.MongoId)));
 
             var usersOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
 
             UsersOrganizations newRelation = new UsersOrganizations()
             {
-                UserId = mongoUser["_id"].AsObjectId,
+                UserId = new ObjectId(mongoUser.MongoId),
                 OrganizationId = organization.Id,
                 Name = organization.Name,
+                Username = mongoUser.Username,
                 Role = role
             };
 
