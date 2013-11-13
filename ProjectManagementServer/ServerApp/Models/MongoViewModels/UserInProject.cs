@@ -5,7 +5,7 @@ using System.Web;
 
 namespace ServerApp.Models.MongoViewModels
 {
-    public class AssignUserInProject
+    public class UserInProject
     {
         public string Username { get; set; }
         public string OrganizationName { get; set; }

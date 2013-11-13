@@ -169,11 +169,13 @@
     </Compile>
     <Compile Include="IoCClasses\NinjectResolver.cs" />
     <Compile Include="IoCClasses\NinjectScope.cs" />
-    <Compile Include="Models\MongoViewModels\AssignUserInProject.cs" />
+    <Compile Include="Models\MongoViewModels\UserInProject.cs" />
     <Compile Include="Models\MongoViewModels\InvitationViewModel.cs" />
     <Compile Include="Models\LoginResult.cs" />
     <Compile Include="Models\LoginUser.cs" />
     <Compile Include="Models\MongoViewModels\OgranizationListEntry.cs" />
+    <Compile Include="Models\MongoViewModels\ProjectForUser.cs" />
+    <Compile Include="Models\MongoViewModels\UserAdminProfile.cs" />
     <Compile Include="Models\MongoViewModels\UsersInOrganizationVM.cs" />
     <Compile Include="Models\RegisterUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

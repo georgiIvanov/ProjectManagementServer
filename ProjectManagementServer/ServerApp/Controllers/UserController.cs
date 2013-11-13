@@ -28,6 +28,59 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
+        public HttpResponseMessage UserAdminProfile(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var queriedOrganization = GenericQueries.CheckOrganizationName(postData.OrganizationName, mongoDb);
+            if (queriedOrganization == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid organization name.");
+                return responseMessage;
+            }
+
+            MongoCollection<UsersOrganizations> usersAndOrganizations = mongoDb.GetCollection<UsersOrganizations>(MongoCollections.UsersInOrganizations);
+            UsersOrganizations userAssigning;
+            GenericQueries.CheckUser(authKey, queriedOrganization, usersAndOrganizations, out userAssigning, UserRoles.OrganizationManager, db);
+            if (userAssigning == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Insufficient permissions.");
+                return responseMessage;
+            }
+
+            MongoCollection<Project> projectsCollection = mongoDb.GetCollection<Project>(MongoCollections.Projects);
+
+            var allProjects = (from pr in projectsCollection.AsQueryable<Project>()
+                               select new ProjectForUser()
+                               {
+                                   Name = pr.Name
+                               }
+                               ).ToDictionary<ProjectForUser, string>(x => x.Name);
+
+            MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+
+            var projectsInvolved = (from up in usersProjects.AsQueryable<UsersProjects>()
+                                    where up.Username == postData.Username
+                                    select up.ProjectName
+                                    );
+
+            foreach (var projName in projectsInvolved)
+            {
+                if (allProjects.ContainsKey(projName))
+                {
+                    allProjects[projName].UserParticipatesIn = true;
+                }
+            }
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Projects = allProjects.Values });
+        }
+
         public HttpResponseMessage GetAllUsersInOrganization(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;

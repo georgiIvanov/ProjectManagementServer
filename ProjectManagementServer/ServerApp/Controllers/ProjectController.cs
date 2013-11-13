@@ -28,7 +28,7 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
-        public HttpResponseMessage PartInProject(AssignUserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        public HttpResponseMessage PartInProject(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
             User sqlUser;
@@ -76,21 +76,7 @@ namespace ServerApp.Controllers
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Assigned = "Success" });
         }
 
-        private void CreateUserProjectRelation(UsersOrganizations userAssigned, Project project)
-        {
-            MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
-            UsersProjects usersProjectsRelation = new UsersProjects()
-            {
-                //ProjectId = project.Id,
-                ProjectName = project.Name,
-                //UserId = userAssigned.Id,
-                Username = userAssigned.Username,
-                Role = userAssigned.Role
-            };
-            usersProjects.Save(usersProjectsRelation);
-        }
-
-        public HttpResponseMessage RemoveFromProject(AssignUserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        public HttpResponseMessage RemoveFromProject(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
             User sqlUser;
@@ -135,7 +121,7 @@ namespace ServerApp.Controllers
 
             MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
 
-            usersProjects.Remove(Query.EQ("Username", userRemoved.Username));
+            usersProjects.Remove(Query.EQ("Username", userRemoved.Username), RemoveFlags.Single);
 
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Removed = "Success" });
@@ -174,6 +160,20 @@ namespace ServerApp.Controllers
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
                 new { Created = "Success" });
+        }
+
+        private void CreateUserProjectRelation(UsersOrganizations userAssigned, Project project)
+        {
+            MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+            UsersProjects usersProjectsRelation = new UsersProjects()
+            {
+                //ProjectId = project.Id,
+                ProjectName = project.Name,
+                //UserId = userAssigned.Id,
+                Username = userAssigned.Username,
+                Role = userAssigned.Role
+            };
+            usersProjects.Save(usersProjectsRelation);
         }
 
         //private UserRoles SetRoleForProject(UserRoles usersRole)
