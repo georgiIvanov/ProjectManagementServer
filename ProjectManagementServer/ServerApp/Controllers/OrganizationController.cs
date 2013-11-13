@@ -135,7 +135,7 @@ namespace ServerApp.Controllers
                                                  where o.UserId == new ObjectId(userMongoId)
                                                  select new OgranizationListEntry()
                                                  {
-                                                     Name = o.Name,
+                                                     Name = o.OrganizationName,
                                                      OrganizationId = o.OrganizationId,
                                                      Role = o.Role
                                                  }).ToList();

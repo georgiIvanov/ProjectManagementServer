@@ -31,7 +31,7 @@ namespace ServerApp.Utilities
 
             foundUser = usersAndOrganizations.AsQueryable<UsersOrganizations>()
 .FirstOrDefault(x => x.Role >= role &&
-    x.UserId == new ObjectId(userMongoId) && x.Name == queriedOrganization.Name);
+    x.UserId == new ObjectId(userMongoId) && x.OrganizationName == queriedOrganization.Name);
         }
 
         internal static Organization CheckOrganizationName(string organizationName, MongoDatabase mongoDb)
@@ -55,7 +55,7 @@ namespace ServerApp.Utilities
             {
                 UserId = mongoUser._MongoId,
                 OrganizationId = organization.Id,
-                Name = organization.Name,
+                OrganizationName = organization.Name,
                 Username = mongoUser.Username,
                 Role = role
             };
@@ -75,7 +75,7 @@ namespace ServerApp.Utilities
             {
                 UserId = mongoUser["_id"].AsObjectId,
                 OrganizationId = organization.Id,
-                Name = organization.Name,
+                OrganizationName = organization.Name,
                 Role = role
             };
 

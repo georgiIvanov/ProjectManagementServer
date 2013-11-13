@@ -202,7 +202,7 @@ namespace ServerApp.Controllers
             {
                 UserId = mongoUser["_id"].AsObjectId,
                 OrganizationId = organization.Id,
-                Name = organization.Name,
+                OrganizationName = organization.Name,
                 Username = sqlUser.Username,
                 Role = role
             };

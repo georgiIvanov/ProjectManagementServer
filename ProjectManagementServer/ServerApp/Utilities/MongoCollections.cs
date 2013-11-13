@@ -36,5 +36,11 @@ namespace ServerApp.Utilities
             get { return "Invitations"; }
             set { }
         }
+
+        public static string UsersInProjects
+        {
+            get { return "UsersInProjects"; }
+            set { }
+        }
     }
 }

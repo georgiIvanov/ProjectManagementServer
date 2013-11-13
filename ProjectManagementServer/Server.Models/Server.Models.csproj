@@ -52,6 +52,7 @@
     <Compile Include="Invitation.cs" />
     <Compile Include="MongoDbModels\Project.cs" />
     <Compile Include="MongoDbModels\UsersOrganizations.cs" />
+    <Compile Include="MongoDbModels\UsersProjects.cs" />
     <Compile Include="ObjectIdConverter.cs" />
     <Compile Include="MongoDbModels\Organization.cs" />
     <Compile Include="User.cs" />

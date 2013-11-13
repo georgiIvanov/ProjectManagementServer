@@ -54,17 +54,86 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
+            UsersOrganizations userAssigned = usersAndOrganizations.FindOneAs<UsersOrganizations>(Query.EQ("Username", postData.Username));
+            if (userAssigned == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such user in organization.");
+                return responseMessage;
+            }
+
+            //todo check if assigned user isnt already in project
             MongoCollection<Project> projectsCollection = mongoDb.GetCollection<Project>(MongoCollections.Projects);
+            Project project;
+            project = projectsCollection.FindOneAs<Project>(Query.EQ("Name", postData.ProjectName));
+            if (project == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid project.");
+                return responseMessage;
+            }
 
+            MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+            UsersProjects usersProjectsRelation = new UsersProjects()
+            {
+                //ProjectId = project.Id,
+                ProjectName = project.Name,
+                //UserId = userAssigned.Id,
+                Username = userAssigned.Username,
+                Role = userAssigned.Role
+            };
+            usersProjects.Save(usersProjectsRelation);
 
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK);
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Assigned = "Success" });
         }
 
-        public HttpResponseMessage RemoveFromProject(string username, string project, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        public HttpResponseMessage RemoveFromProject(AssignUserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
+            User sqlUser;
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
 
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK);
+            var queriedOrganization = GenericQueries.CheckOrganizationName(postData.OrganizationName, mongoDb);
+            if (queriedOrganization == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid organization name.");
+                return responseMessage;
+            }
+
+            MongoCollection<UsersOrganizations> usersAndOrganizations = mongoDb.GetCollection<UsersOrganizations>(MongoCollections.UsersInOrganizations);
+            UsersOrganizations userAssigning;
+            GenericQueries.CheckUser(authKey, queriedOrganization, usersAndOrganizations, out userAssigning, UserRoles.OrganizationManager, db);
+            if (userAssigning == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Insufficient permissions.");
+                return responseMessage;
+            }
+
+            UsersOrganizations userRemoved = usersAndOrganizations.FindOneAs<UsersOrganizations>(Query.EQ("Username", postData.Username));
+            if (userRemoved == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such user in organization.");
+                return responseMessage;
+            }
+
+            //todo check if assigned user isnt already in project
+            MongoCollection<Project> projectsCollection = mongoDb.GetCollection<Project>(MongoCollections.Projects);
+            Project project;
+            project = projectsCollection.FindOneAs<Project>(Query.EQ("Name", postData.ProjectName));
+            if (project == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid project.");
+                return responseMessage;
+            }
+
+            MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+
+            usersProjects.Remove(Query.EQ("Username", userRemoved.Username));
+
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Removed = "Success" });
         }
 
         public HttpResponseMessage CreateProject(Project project, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
@@ -92,12 +161,22 @@ namespace ServerApp.Controllers
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Insufficient permissions.");
                 return responseMessage;
             }
-
+            //todo check if project name is unique
             MongoCollection<BsonDocument> projects = mongoDb.GetCollection(MongoCollections.Projects);
             projects.Save(project);
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
                 new { Created = "Success" });
         }
+
+        //private UserRoles SetRoleForProject(UserRoles usersRole)
+        //{
+        //    if (usersRole >= UserRoles.OrganizationManager)
+        //    {
+        //        return usersRole;
+        //    }
+
+        //    return usersRole;
+        //}
     }
 }
