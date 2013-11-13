@@ -161,7 +161,7 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            MongoCollection<BsonDocument> usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
+            MongoCollection<UsersOrganizations> usersAndOrganizations = mongoDb.GetCollection<UsersOrganizations>(MongoCollections.UsersInOrganizations);
             UsersOrganizations invitator;
             GenericQueries.CheckUser(authKey, queriedOrganization, usersAndOrganizations, out invitator, UserRoles.OrganizationManager, db);
 

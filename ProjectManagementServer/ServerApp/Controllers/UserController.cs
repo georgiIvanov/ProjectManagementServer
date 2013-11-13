@@ -44,7 +44,7 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            MongoCollection<BsonDocument> usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
+            MongoCollection<UsersOrganizations> usersAndOrganizations = mongoDb.GetCollection<UsersOrganizations>(MongoCollections.UsersInOrganizations);
             UsersOrganizations queryingUser;
             GenericQueries.CheckUser(authKey, queriedOrganization, usersAndOrganizations, out queryingUser, UserRoles.OrganizationManager, db);
 
@@ -54,21 +54,15 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            //var usersInOrganization = usersAndOrganizations.Find(Query.EQ("_id", queriedOrganization.Id)).ToList();
 
             var usersInOrganization = (from us in usersAndOrganizations.AsQueryable<UsersOrganizations>()
-                                                               where us.OrganizationId == queriedOrganization.Id
-                                                               select new UsersInOrganizationVM()
-                                                               {
-                                                                   Role = us.Role,
-                                                                   Username = us.Username
-                                                               }).ToList();
+                                        where us.OrganizationId == queriedOrganization.Id
+                                        select new UsersInOrganizationVM()
+                                        {
+                                            Role = us.Role,
+                                            Username = us.Username
+                                        }).ToList();
 
-           //var usersInOrganization = usersAndOrganizations.FindAs<UsersInOrganizationVM>(Query.EQ("OrganizationId", queriedOrganization.Id)).Select(x => new UsersInOrganizationVM()
-           // {
-           //     Role = x.Role,
-           //     Username = x.Username
-           // });
 
             Dictionary<string,List<UsersInOrganizationVM>> grouped = new Dictionary<string, List<UsersInOrganizationVM>>();
 

@@ -50,7 +50,7 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            MongoCollection<BsonDocument> usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
+            MongoCollection<UsersOrganizations> usersAndOrganizations = mongoDb.GetCollection<UsersOrganizations>(MongoCollections.UsersInOrganizations);
             UsersOrganizations foundUser;
             GenericQueries.CheckUser(authKey, queriedOrganization, usersAndOrganizations, out foundUser, UserRoles.OrganizationManager, db);
 
@@ -87,7 +87,7 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            MongoCollection<BsonDocument> usersAndOrganizations = mongoDb.GetCollection(MongoCollections.UsersInOrganizations);
+            MongoCollection<UsersOrganizations> usersAndOrganizations = mongoDb.GetCollection<UsersOrganizations>(MongoCollections.UsersInOrganizations);
 
             UsersOrganizations foundUser;
             GenericQueries.CheckUser(authKey, queriedOrganization, usersAndOrganizations, out foundUser, UserRoles.OrganizationManager, db);

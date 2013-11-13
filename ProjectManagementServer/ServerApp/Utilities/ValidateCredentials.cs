@@ -1,4 +1,5 @@
 ﻿using Server.Data;
+using Server.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,21 @@ namespace ServerApp.Utilities
             }
             else
             {
+                return true;
+            }
+        }
+
+        public static bool AuthKeyIsValid(IUoWData db, string authKey, out User sqlUser)
+        {
+            var found = db.Users.All().FirstOrDefault(x => x.AuthKey == authKey);
+            if (found == null)
+            {
+                sqlUser = null;
+                return false;
+            }
+            else
+            {
+                sqlUser = found;
                 return true;
             }
         }

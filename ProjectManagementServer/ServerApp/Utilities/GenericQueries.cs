@@ -25,7 +25,7 @@ namespace ServerApp.Utilities
             user = usersCollection.AsQueryable<User>().FirstOrDefault(x => x.Email.ToLower() == invitedUser || x.Username.ToLower() == invitedUser);
         }
 
-        internal static void CheckUser(string authKey, Organization queriedOrganization, MongoCollection<BsonDocument> usersAndOrganizations, out UsersOrganizations foundUser, UserRoles role, IUoWData db)
+        internal static void CheckUser(string authKey, Organization queriedOrganization, MongoCollection<UsersOrganizations> usersAndOrganizations, out UsersOrganizations foundUser, UserRoles role, IUoWData db)
         {
             var userMongoId = db.Users.All().Single(x => x.AuthKey == authKey).MongoId;
 

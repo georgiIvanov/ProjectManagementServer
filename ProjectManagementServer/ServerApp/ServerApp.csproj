@@ -169,6 +169,7 @@
     </Compile>
     <Compile Include="IoCClasses\NinjectResolver.cs" />
     <Compile Include="IoCClasses\NinjectScope.cs" />
+    <Compile Include="Models\MongoViewModels\AssignUserInProject.cs" />
     <Compile Include="Models\MongoViewModels\InvitationViewModel.cs" />
     <Compile Include="Models\LoginResult.cs" />
     <Compile Include="Models\LoginUser.cs" />
