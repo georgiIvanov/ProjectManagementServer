@@ -71,6 +71,13 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
+            CreateUserProjectRelation(userAssigned, project);
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Assigned = "Success" });
+        }
+
+        private void CreateUserProjectRelation(UsersOrganizations userAssigned, Project project)
+        {
             MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
             UsersProjects usersProjectsRelation = new UsersProjects()
             {
@@ -81,8 +88,6 @@ namespace ServerApp.Controllers
                 Role = userAssigned.Role
             };
             usersProjects.Save(usersProjectsRelation);
-
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Assigned = "Success" });
         }
 
         public HttpResponseMessage RemoveFromProject(AssignUserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
@@ -164,6 +169,8 @@ namespace ServerApp.Controllers
             //todo check if project name is unique
             MongoCollection<BsonDocument> projects = mongoDb.GetCollection(MongoCollections.Projects);
             projects.Save(project);
+
+            CreateUserProjectRelation(userCreating, project);
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
                 new { Created = "Success" });
