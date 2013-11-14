@@ -116,7 +116,8 @@ namespace ServerApp.Controllers
             LoginResult logResult = new LoginResult()
             {
                 AuthKey = found.AuthKey,
-                LastLogged = found.LastLogin.ToString("yyyy-MM-dd HH:mm:ss")
+                LastLogged = found.LastLogin.ToString("yyyy-MM-dd HH:mm:ss"),
+                Username = found.Username
             };
 
             found.LastLogin = DateTime.Now;

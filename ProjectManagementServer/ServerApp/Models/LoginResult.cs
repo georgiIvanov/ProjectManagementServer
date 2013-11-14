@@ -9,5 +9,6 @@ namespace ServerApp.Models
     {
         public string AuthKey { get; set; }
         public string LastLogged { get; set; }
+        public string Username { get; set; }
     }
 }
