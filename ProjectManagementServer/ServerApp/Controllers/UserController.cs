@@ -14,6 +14,7 @@ using ServerApp.Utilities;
 using System.Collections.Generic;
 using ServerApp.Models.MongoViewModels;
 using Server.Models;
+using ServerApp.Models.MongoViewModels.User;
 
 namespace ServerApp.Controllers
 {
@@ -26,6 +27,34 @@ namespace ServerApp.Controllers
         {
             this.db = db;
             this.mongoDb = MongoClientFactory.GetDatabase();
+        }
+
+        public HttpResponseMessage UserProfile(UserProfile postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+
+            User sqlUser;
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+            //todo check if user is in organization
+            var queriedOrganization = GenericQueries.CheckOrganizationName(postData.OrganizationName, mongoDb);
+            if (queriedOrganization == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid organization name.");
+                return responseMessage;
+            }
+
+            MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+
+            var projectsInvolved = (from up in usersProjects.AsQueryable<UsersProjects>()
+                                    where up.Username == sqlUser.Username
+                                    select up.ProjectName
+                                    );
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Projects = projectsInvolved });
         }
 
         public HttpResponseMessage UserAdminProfile(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)

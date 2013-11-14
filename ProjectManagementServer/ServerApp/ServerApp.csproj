@@ -174,9 +174,10 @@
     <Compile Include="Models\LoginResult.cs" />
     <Compile Include="Models\LoginUser.cs" />
     <Compile Include="Models\MongoViewModels\OgranizationListEntry.cs" />
-    <Compile Include="Models\MongoViewModels\ProjectForUser.cs" />
+    <Compile Include="Models\MongoViewModels\User\ProjectForUser.cs" />
     <Compile Include="Models\MongoViewModels\UserAdminProfile.cs" />
     <Compile Include="Models\MongoViewModels\UsersInOrganizationVM.cs" />
+    <Compile Include="Models\MongoViewModels\User\UserProfile.cs" />
     <Compile Include="Models\RegisterUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\GenericQueries.cs" />
