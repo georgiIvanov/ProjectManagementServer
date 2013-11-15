@@ -98,8 +98,8 @@ namespace ServerApp.Controllers
             List<AnswerIssue> entries = new List<AnswerIssue>();
             AnswerIssue question = new AnswerIssue()
             {
-                DatePosted = issue.DatePosted,
-                ByUser = issue.ByUser,
+                Time = issue.DatePosted,
+                Username = issue.ByUser,
                 Text = issue.Text
             };
 

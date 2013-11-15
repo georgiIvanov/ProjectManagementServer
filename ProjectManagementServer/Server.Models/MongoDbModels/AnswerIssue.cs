@@ -11,7 +11,7 @@ namespace Server.Models.MongoDbModels
     {
         [StringLength(300)]
         public string Text { get; set; }
-        public DateTime DatePosted { get; set; }
-        public string ByUser { get; set; }
+        public DateTime Time { get; set; }
+        public string Username { get; set; }
     }
 }
