@@ -57,7 +57,9 @@ namespace ServerApp.Controllers
             issue.Answers.Add(answer);
             issuesCollection.Save(issue);
 
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { AnswerPosted = "Success" });
+            List<AnswerIssue> entries = GetEntries(issue);
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Entries = entries });
         }
 
         public HttpResponseMessage PostIssue(OpenIssue postedIssue, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
@@ -124,6 +126,13 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
+            List<AnswerIssue> entries = GetEntries(issue);
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Entries = entries, Title = issue.Title });
+        }
+
+        private static List<AnswerIssue> GetEntries(OpenIssue issue)
+        {
             List<AnswerIssue> entries = new List<AnswerIssue>();
             AnswerIssue question = new AnswerIssue()
             {
@@ -134,8 +143,7 @@ namespace ServerApp.Controllers
 
             entries.Add(question);
             entries.AddRange(issue.Answers);
-
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Entries = entries, Title = issue.Title });
+            return entries;
         }
     }
 }
