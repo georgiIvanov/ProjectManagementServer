@@ -29,6 +29,8 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
+        
+
         public HttpResponseMessage PostIssue(OpenIssue postedIssue, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;

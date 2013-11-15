@@ -14,6 +14,7 @@ using ServerApp.Utilities;
 using System.Collections.Generic;
 using ServerApp.Models.MongoViewModels;
 using Server.Models;
+using ServerApp.Models.MongoViewModels.Project;
 
 namespace ServerApp.Controllers
 {
@@ -26,6 +27,42 @@ namespace ServerApp.Controllers
         {
             this.db = db;
             this.mongoDb = MongoClientFactory.GetDatabase();
+        }
+
+        public HttpResponseMessage GetProjectInformation(string projectName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+            User sqlUser;
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            MongoCollection<UsersProjects> usersInProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+
+            // todo projects need to be recognized by id, because they're names are not unique
+            // the relation table has to save the id and use it in further queries
+
+            UsersProjects postingUser = usersInProjects.AsQueryable<UsersProjects>()
+                .FirstOrDefault(x => x.Username == sqlUser.Username
+                && x.ProjectName == projectName);
+            if (postingUser == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "User does not participate in project.");
+                return responseMessage;
+            }
+
+            MongoCollection<OpenIssue> issuesCollection = mongoDb.GetCollection<OpenIssue>(MongoCollections.Issues);
+            var issues = from i in issuesCollection.AsQueryable<OpenIssue>()
+                         where i.ProjectName == projectName
+                         select new IssueTableCell()
+                         {
+                             Id = i.Id.ToString(),
+                             Title = i.Title
+                         };
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Issues = issues });
         }
 
         public HttpResponseMessage PartInProject(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
