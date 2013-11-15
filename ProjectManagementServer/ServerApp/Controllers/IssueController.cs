@@ -62,5 +62,51 @@ namespace ServerApp.Controllers
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Posted = "Success" });
         }
+
+        public HttpResponseMessage GetIssue(string issueId, string projectName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+            User sqlUser;
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            MongoCollection<UsersProjects> usersInProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+
+            // todo projects need to be recognized by id, because they're names are not unique
+            // the relation table has to save the id and use it in further queries
+
+            UsersProjects postingUser = usersInProjects.AsQueryable<UsersProjects>()
+                .FirstOrDefault(x => x.Username == sqlUser.Username
+                && x.ProjectName == projectName);
+            if (postingUser == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "User does not participate in project.");
+                return responseMessage;
+            }
+
+            MongoCollection<OpenIssue> issuesCollection = mongoDb.GetCollection<OpenIssue>(MongoCollections.Issues);
+            var issue = issuesCollection.AsQueryable<OpenIssue>().FirstOrDefault(x => x.Id == new ObjectId(issueId));
+            if (issue == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such issue.");
+                return responseMessage;
+            }
+
+            List<AnswerIssue> entries = new List<AnswerIssue>();
+            AnswerIssue question = new AnswerIssue()
+            {
+                DatePosted = issue.DatePosted,
+                ByUser = issue.ByUser,
+                Text = issue.Text
+            };
+
+            entries.Add(question);
+            entries.AddRange(issue.Answers);
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Entries = entries, Title = issue.Title });
+        }
     }
 }
