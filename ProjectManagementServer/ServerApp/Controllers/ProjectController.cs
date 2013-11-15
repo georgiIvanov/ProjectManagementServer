@@ -167,7 +167,7 @@ namespace ServerApp.Controllers
             MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
             UsersProjects usersProjectsRelation = new UsersProjects()
             {
-                //ProjectId = project.Id,
+                ProjectId = project.Id,
                 ProjectName = project.Name,
                 //UserId = userAssigned.Id,
                 Username = userAssigned.Username,
