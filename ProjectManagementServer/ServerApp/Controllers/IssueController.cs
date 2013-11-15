@@ -29,7 +29,36 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
-        
+        public HttpResponseMessage PostAnswerToIssue(AnswerIssue answer, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+            User sqlUser;
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            MongoCollection<UsersProjects> usersInProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+
+            // todo projects need to be recognized by id, because they're names are not unique
+            // the relation table has to save the id and use it in further queries
+
+            
+
+            MongoCollection<OpenIssue> issuesCollection = mongoDb.GetCollection<OpenIssue>(MongoCollections.Issues);
+            var issue = issuesCollection.AsQueryable<OpenIssue>().FirstOrDefault(x => x.Id == new ObjectId(answer.IssueId));
+            if (issue == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such issue.");
+                return responseMessage;
+            }
+
+            issue.Answers.Add(answer);
+            issuesCollection.Save(issue);
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { AnswerPosted = "Success" });
+        }
 
         public HttpResponseMessage PostIssue(OpenIssue postedIssue, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {

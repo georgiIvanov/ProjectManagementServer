@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -13,5 +14,7 @@ namespace Server.Models.MongoDbModels
         public string Text { get; set; }
         public DateTime Time { get; set; }
         public string Username { get; set; }
+        [BsonIgnore]
+        public string IssueId { get; set; }
     }
 }
