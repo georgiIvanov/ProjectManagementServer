@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using ServerApp.Models.MongoViewModels;
 using Server.Models;
 using System.Text;
-using ServerApp.Models.MongoViewModels.ProjectRelated;
+
 namespace ServerApp.Controllers
 {
     public class IssueController : ApiController
@@ -29,7 +29,7 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
-        public HttpResponseMessage PostIssue(IssueViewModel postedIssue, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        public HttpResponseMessage PostIssue(OpenIssue postedIssue, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
             User sqlUser;
@@ -53,9 +53,12 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            MongoCollection<IssueViewModel> issuesCollection = mongoDb.GetCollection<IssueViewModel>(MongoCollections.Issues);
+            MongoCollection<OpenIssue> issuesCollection = mongoDb.GetCollection<OpenIssue>(MongoCollections.Issues);
+            postedIssue.ByUser = sqlUser.Username;
+            postedIssue.Answers = new List<AnswerIssue>();
+            issuesCollection.Save(postedIssue);
 
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK);
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Posted = "Success" });
         }
     }
 }

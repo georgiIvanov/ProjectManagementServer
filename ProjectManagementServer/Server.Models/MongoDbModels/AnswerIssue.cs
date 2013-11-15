@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ServerApp.Models.MongoViewModels.ProjectRelated
+namespace Server.Models.MongoDbModels
 {
-    public class IssueViewModel
+    public class AnswerIssue
     {
-        // has to have proj id instead
-        public string ProjectName { get; set; }
         [StringLength(300)]
         public string Text { get; set; }
         public DateTime DatePosted { get; set; }

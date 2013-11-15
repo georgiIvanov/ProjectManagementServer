@@ -50,6 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Invitation.cs" />
+    <Compile Include="MongoDbModels\AnswerIssue.cs" />
+    <Compile Include="MongoDbModels\OpenIssue.cs" />
     <Compile Include="MongoDbModels\Project.cs" />
     <Compile Include="MongoDbModels\UsersOrganizations.cs" />
     <Compile Include="MongoDbModels\UsersProjects.cs" />
