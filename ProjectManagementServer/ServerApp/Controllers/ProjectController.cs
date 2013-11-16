@@ -60,8 +60,8 @@ namespace ServerApp.Controllers
                          {
                              Id = i.Id.ToString(),
                              Title = i.Title
-                         }).Reverse();
-
+                         }).ToList();
+            issues.Reverse();
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Issues = issues });
         }
 
