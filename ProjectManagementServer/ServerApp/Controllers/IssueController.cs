@@ -98,6 +98,7 @@ namespace ServerApp.Controllers
         [HttpPost]
         public HttpResponseMessage GetIssue(ProjectPostData postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
+            // todo get issue needs only issue id
             HttpResponseMessage responseMessage;
             User sqlUser;
             if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
