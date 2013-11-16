@@ -54,13 +54,13 @@ namespace ServerApp.Controllers
             }
 
             MongoCollection<OpenIssue> issuesCollection = mongoDb.GetCollection<OpenIssue>(MongoCollections.Issues);
-            var issues = from i in issuesCollection.AsQueryable<OpenIssue>()
+            var issues = (from i in issuesCollection.AsQueryable<OpenIssue>()
                          where i.ProjectName == projectName
                          select new IssueTableCell()
                          {
                              Id = i.Id.ToString(),
                              Title = i.Title
-                         };
+                         }).Reverse();
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Issues = issues });
         }
