@@ -86,6 +86,7 @@ namespace ServerApp.Controllers
             MongoCollection<Project> projectsCollection = mongoDb.GetCollection<Project>(MongoCollections.Projects);
 
             var allProjects = (from pr in projectsCollection.AsQueryable<Project>()
+                               where pr.OrganizationName == postData.OrganizationName
                                select new ProjectForUser()
                                {
                                    Name = pr.Name
