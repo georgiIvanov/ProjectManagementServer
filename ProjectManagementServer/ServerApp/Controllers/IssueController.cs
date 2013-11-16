@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using ServerApp.Models.MongoViewModels;
 using Server.Models;
 using System.Text;
+using ServerApp.Models;
 
 namespace ServerApp.Controllers
 {
@@ -94,7 +95,8 @@ namespace ServerApp.Controllers
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Posted = "Success" });
         }
 
-        public HttpResponseMessage GetIssue(string issueId, string projectName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        [HttpPost]
+        public HttpResponseMessage GetIssue(ProjectPostData postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
             User sqlUser;
@@ -111,7 +113,7 @@ namespace ServerApp.Controllers
 
             UsersProjects postingUser = usersInProjects.AsQueryable<UsersProjects>()
                 .FirstOrDefault(x => x.Username == sqlUser.Username
-                && x.ProjectName == projectName);
+                && x.ProjectName == postData.ProjectName);
             if (postingUser == null)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "User does not participate in project.");
@@ -119,7 +121,7 @@ namespace ServerApp.Controllers
             }
 
             MongoCollection<OpenIssue> issuesCollection = mongoDb.GetCollection<OpenIssue>(MongoCollections.Issues);
-            var issue = issuesCollection.AsQueryable<OpenIssue>().FirstOrDefault(x => x.Id == new ObjectId(issueId));
+            var issue = issuesCollection.AsQueryable<OpenIssue>().FirstOrDefault(x => x.Id == new ObjectId(postData.IssueId));
             if (issue == null)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such issue.");

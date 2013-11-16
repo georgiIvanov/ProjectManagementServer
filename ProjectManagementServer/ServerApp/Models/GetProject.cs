@@ -9,8 +9,9 @@ namespace ServerApp.Models
     /// added because project with spaces does not 
     /// create a proper url in iOS
     /// </summary>
-    public class GetProject
+    public class ProjectPostData
     {
         public string ProjectName { get; set; }
+        public string IssueId { get; set; }
     }
 }

@@ -31,7 +31,7 @@ namespace ServerApp.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage GetProjectInformation(GetProject project, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        public HttpResponseMessage GetProjectInformation(ProjectPostData project, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
             User sqlUser;
