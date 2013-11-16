@@ -28,6 +28,34 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
+        public HttpResponseMessage GetNote(string noteId, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+            User sqlUser;
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            MongoCollection<Note> notesCollection = mongoDb.GetCollection<Note>(MongoCollections.Notes);
+            Note foundNote = notesCollection.FindOneAs<Note>(Query.EQ("_id", new ObjectId(noteId)));
+
+            MongoCollection<UsersProjects> usersInProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+
+            // todo projects need to be recognized by id
+            UsersProjects postingUser = usersInProjects.AsQueryable<UsersProjects>()
+                .FirstOrDefault(x => x.Username == sqlUser.Username
+                && x.ProjectName == foundNote.ProjectName);
+            if (postingUser == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "User does not participate in project.");
+                return responseMessage;
+            }
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Note = foundNote });
+        }
+
         public HttpResponseMessage PostNote(Note postedNote, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
