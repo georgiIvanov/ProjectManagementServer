@@ -171,6 +171,7 @@
     </Compile>
     <Compile Include="IoCClasses\NinjectResolver.cs" />
     <Compile Include="IoCClasses\NinjectScope.cs" />
+    <Compile Include="Models\GetProject.cs" />
     <Compile Include="Models\MongoViewModels\Project\IssueTableCell.cs" />
     <Compile Include="Models\MongoViewModels\Project\NoteTableCell.cs" />
     <Compile Include="Models\MongoViewModels\Project\UserInProject.cs" />

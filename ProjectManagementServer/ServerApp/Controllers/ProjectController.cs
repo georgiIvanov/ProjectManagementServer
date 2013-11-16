@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using ServerApp.Models.MongoViewModels;
 using Server.Models;
 using ServerApp.Models.MongoViewModels.Project;
+using ServerApp.Models;
 
 namespace ServerApp.Controllers
 {
@@ -29,7 +30,8 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
-        public HttpResponseMessage GetProjectInformation(string projectName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        [HttpPost]
+        public HttpResponseMessage GetProjectInformation(GetProject project, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
             User sqlUser;
@@ -46,7 +48,7 @@ namespace ServerApp.Controllers
 
             UsersProjects postingUser = usersInProjects.AsQueryable<UsersProjects>()
                 .FirstOrDefault(x => x.Username == sqlUser.Username
-                && x.ProjectName == projectName);
+                && x.ProjectName == project.ProjectName);
             if (postingUser == null)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "User does not participate in project.");
@@ -57,7 +59,7 @@ namespace ServerApp.Controllers
             MongoCollection<Note> notesCollection = mongoDb.GetCollection<Note>(MongoCollections.Notes);
 
             var issues = (from i in issuesCollection.AsQueryable<OpenIssue>()
-                         where i.ProjectName == projectName
+                          where i.ProjectName == project.ProjectName
                          select new IssueTableCell()
                          {
                              Id = i.Id.ToString(),
@@ -66,7 +68,7 @@ namespace ServerApp.Controllers
             issues.Reverse();
 
             var notes = (from n in notesCollection.AsQueryable<Note>()
-                         where n.ProjectName == projectName
+                         where n.ProjectName == project.ProjectName
                          select new NoteTableCell()
                          {
                              Id = n.Id.ToString(),
