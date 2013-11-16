@@ -50,7 +50,7 @@ namespace ServerApp.Controllers
             MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
 
             var projectsInvolved = (from up in usersProjects.AsQueryable<UsersProjects>()
-                                    where up.Username == sqlUser.Username
+                                    where up.Username == sqlUser.Username && up.OrganizationName == postData.OrganizationName
                                     select up.ProjectName
                                     );
 

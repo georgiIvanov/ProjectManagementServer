@@ -45,7 +45,7 @@ namespace ServerApp.Controllers
 
             UsersProjects postingUser = usersInProjects.AsQueryable<UsersProjects>()
                 .FirstOrDefault(x => x.Username == sqlUser.Username
-                && x.ProjectName == postedNote.ProjectName && x.Role >= UserRoles.SeniorEmployee);
+                && x.ProjectName == postedNote.ProjectName && x.Role >= UserRoles.ProjectManager);
             if (postingUser == null)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "User does not participate in project or role is insufficient.");

@@ -18,6 +18,7 @@ namespace Server.Models.MongoDbModels
         public ObjectId ProjectId { get; set; }
         public string ProjectName { get; set; }
         public string Username { get; set; }
+        public string OrganizationName { get; set; }
         public UserRoles Role { get; set; }
     }
 }

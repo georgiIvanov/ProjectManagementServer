@@ -219,6 +219,7 @@ namespace ServerApp.Controllers
                 ProjectName = project.Name,
                 //UserId = userAssigned.Id,
                 Username = userAssigned.Username,
+                OrganizationName = project.OrganizationName,
                 Role = userAssigned.Role
             };
             usersProjects.Save(usersProjectsRelation);
