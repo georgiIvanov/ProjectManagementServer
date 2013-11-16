@@ -41,7 +41,7 @@ namespace ServerApp.Controllers
 
             MongoCollection<UsersProjects> usersInProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
 
-            // todo projects need to be recognized by id, because they're names are not unique
+            // todo projects need to be recognized by id
             // the relation table has to save the id and use it in further queries
 
             UsersProjects postingUser = usersInProjects.AsQueryable<UsersProjects>()
@@ -54,6 +54,8 @@ namespace ServerApp.Controllers
             }
 
             MongoCollection<OpenIssue> issuesCollection = mongoDb.GetCollection<OpenIssue>(MongoCollections.Issues);
+            MongoCollection<Note> notesCollection = mongoDb.GetCollection<Note>(MongoCollections.Notes);
+
             var issues = (from i in issuesCollection.AsQueryable<OpenIssue>()
                          where i.ProjectName == projectName
                          select new IssueTableCell()
@@ -62,7 +64,16 @@ namespace ServerApp.Controllers
                              Title = i.Title
                          }).ToList();
             issues.Reverse();
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Issues = issues });
+
+            var notes = (from n in notesCollection.AsQueryable<Note>()
+                         where n.ProjectName == projectName
+                         select new NoteTableCell()
+                         {
+                             Id = n.Id.ToString(),
+                             Title = n.Title
+                         }).ToList();
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Issues = issues, Notes = notes });
         }
 
         public HttpResponseMessage PartInProject(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)

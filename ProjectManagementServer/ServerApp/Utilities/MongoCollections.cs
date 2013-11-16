@@ -48,5 +48,11 @@ namespace ServerApp.Utilities
             get { return "Issues"; }
             set { }
         }
+
+        public static string Notes
+        {
+            get { return "Notes"; }
+            set { }
+        }
     }
 }

@@ -41,7 +41,7 @@ namespace ServerApp.Controllers
 
             MongoCollection<UsersProjects> usersInProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
 
-            // todo projects need to be recognized by id, because they're names are not unique
+            // todo projects need to be recognized by id
             // the relation table has to save the id and use it in further queries
 
             
@@ -74,7 +74,7 @@ namespace ServerApp.Controllers
 
             MongoCollection<UsersProjects> usersInProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
 
-            // todo projects need to be recognized by id, because they're names are not unique
+            // todo projects need to be recognized by id
             // the relation table has to save the id and use it in further queries
 
             UsersProjects postingUser = usersInProjects.AsQueryable<UsersProjects>()
@@ -106,7 +106,7 @@ namespace ServerApp.Controllers
 
             MongoCollection<UsersProjects> usersInProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
 
-            // todo projects need to be recognized by id, because they're names are not unique
+            // todo projects need to be recognized by id
             // the relation table has to save the id and use it in further queries
 
             UsersProjects postingUser = usersInProjects.AsQueryable<UsersProjects>()
