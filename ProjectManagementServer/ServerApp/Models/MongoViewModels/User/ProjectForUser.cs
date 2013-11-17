@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Server.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,5 +10,6 @@ namespace ServerApp.Models.MongoViewModels
     {
         public string Name { get; set; }
         public bool UserParticipatesIn { get; set; }
+        public UserRoles Role { get; set; }
     }
 }

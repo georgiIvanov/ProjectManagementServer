@@ -89,7 +89,7 @@ namespace ServerApp.Controllers
                                where pr.OrganizationName == postData.OrganizationName
                                select new ProjectForUser()
                                {
-                                   Name = pr.Name
+                                   Name = pr.Name,
                                }
                                ).ToDictionary<ProjectForUser, string>(x => x.Name);
 
@@ -97,14 +97,16 @@ namespace ServerApp.Controllers
 
             var projectsInvolved = (from up in usersProjects.AsQueryable<UsersProjects>()
                                     where up.Username == postData.Username
-                                    select up.ProjectName
+                                    select up
                                     );
 
-            foreach (var projName in projectsInvolved)
+            foreach (var proj in projectsInvolved)
             {
-                if (allProjects.ContainsKey(projName))
+                if (allProjects.ContainsKey(proj.ProjectName))
                 {
-                    allProjects[projName].UserParticipatesIn = true;
+                    var participating = allProjects[proj.ProjectName];
+                    participating.UserParticipatesIn = true;
+                    participating.Role = proj.Role;
                 }
             }
 
