@@ -115,6 +115,51 @@ namespace ServerApp.Controllers
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Projects = allProjects.Values, Role = usersProfile.Role });
         }
 
+        public HttpResponseMessage SetProjectManager(SetAsProjectManager postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var queriedOrganization = GenericQueries.CheckOrganizationName(postData.OrganizationName, mongoDb);
+            if (queriedOrganization == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid organization name.");
+                return responseMessage;
+            }
+
+            MongoCollection<UsersOrganizations> usersAndOrganizations = mongoDb.GetCollection<UsersOrganizations>(MongoCollections.UsersInOrganizations);
+            UsersOrganizations userAssigning;
+            UsersOrganizations usersProfile = usersAndOrganizations.FindOneAs<UsersOrganizations>(Query.EQ("Username", postData.Username));
+            GenericQueries.CheckUser(authKey, queriedOrganization, usersAndOrganizations, out userAssigning, UserRoles.OrganizationManager, db);
+
+            if (usersProfile == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "No such user in organization.");
+                return responseMessage;
+            }
+            if (userAssigning == null || userAssigning.Role < usersProfile.Role)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Insufficient permissions.");
+                return responseMessage;
+            }
+
+            MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+            UsersProjects userInProject = usersProjects.FindOneAs<UsersProjects>(Query.And(
+                Query.EQ("ProjectName", postData.ProjectName),
+                Query.EQ("Username", postData.Username),
+                Query.EQ("OrganizationName", postData.OrganizationName)));
+
+            userInProject.Role = postData.SetAsManager ? UserRoles.ProjectManager : usersProfile.Role;
+            usersProjects.Save(userInProject);
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { User = userInProject });
+        }
+
         public HttpResponseMessage ChangeUserRole(UserProfile postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;

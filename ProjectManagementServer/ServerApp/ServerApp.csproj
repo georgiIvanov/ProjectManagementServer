@@ -182,6 +182,7 @@
     <Compile Include="Models\MongoViewModels\OgranizationListEntry.cs" />
     <Compile Include="Models\MongoViewModels\User\ProjectForUser.cs" />
     <Compile Include="Models\MongoViewModels\UsersInOrganizationVM.cs" />
+    <Compile Include="Models\MongoViewModels\User\SetAsProjectManager.cs" />
     <Compile Include="Models\MongoViewModels\User\UserProfile.cs" />
     <Compile Include="Models\RegisterUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
