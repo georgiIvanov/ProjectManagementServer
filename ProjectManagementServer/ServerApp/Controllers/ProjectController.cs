@@ -75,7 +75,7 @@ namespace ServerApp.Controllers
                              Title = n.Title
                          }).ToList();
 
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Issues = issues, Notes = notes });
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Issues = issues, Notes = notes, UserRoleInProject = postingUser.Role });
         }
 
         public HttpResponseMessage PartInProject(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
