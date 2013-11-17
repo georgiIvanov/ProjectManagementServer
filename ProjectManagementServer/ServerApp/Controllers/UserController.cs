@@ -112,7 +112,7 @@ namespace ServerApp.Controllers
 
             UsersOrganizations usersProfile = usersAndOrganizations.FindOneAs<UsersOrganizations>(Query.EQ("Username", postData.Username));
 
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Projects = allProjects.Values, Role=usersProfile.Role });
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Projects = allProjects.Values, Role = usersProfile.Role });
         }
 
         public HttpResponseMessage ChangeUserRole(UserProfile postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
@@ -151,8 +151,31 @@ namespace ServerApp.Controllers
 
             usersProfile.Role = postData.UserRole;
             usersAndOrganizations.Save(usersProfile);
+            ChangeUserRoleInProjects(usersProfile);
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK);
+        }
+
+        private void ChangeUserRoleInProjects(UsersOrganizations user)
+        {
+            MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+            IMongoQuery query;
+            if (user.Role < UserRoles.ProjectManager)
+            {
+                query = Query.And(
+                    Query.NE("Role", UserRoles.ProjectManager),
+                    Query.EQ("Username", user.Username)
+                    );
+            }
+            else
+            {
+                query = Query.And(
+                    Query.EQ("Username", user.Username)
+                    );
+            }
+
+            var update = Update.Set("Role", user.Role);
+            usersProjects.Update(query, update, UpdateFlags.Multi);
         }
 
         public HttpResponseMessage GetAllUsersInOrganization(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
@@ -183,15 +206,15 @@ namespace ServerApp.Controllers
 
 
             var usersInOrganization = (from us in usersAndOrganizations.AsQueryable<UsersOrganizations>()
-                                        where us.OrganizationId == queriedOrganization.Id
-                                        select new UsersInOrganizationVM()
-                                        {
-                                            Role = us.Role,
-                                            Username = us.Username
-                                        }).ToList();
+                                       where us.OrganizationId == queriedOrganization.Id
+                                       select new UsersInOrganizationVM()
+                                       {
+                                           Role = us.Role,
+                                           Username = us.Username
+                                       }).ToList();
 
 
-            Dictionary<string,List<UsersInOrganizationVM>> grouped = new Dictionary<string, List<UsersInOrganizationVM>>();
+            Dictionary<string, List<UsersInOrganizationVM>> grouped = new Dictionary<string, List<UsersInOrganizationVM>>();
 
             foreach (var item in usersInOrganization)
             {
@@ -215,7 +238,7 @@ namespace ServerApp.Controllers
         private string ConvertRoleToString(UserRoles userRole)
         {
             string role;
-            switch(userRole)
+            switch (userRole)
             {
                 case UserRoles.JuniorEmployee: role = "JuniorEmployee"; break;
                 case UserRoles.Employee: role = "Employee"; break;
@@ -225,7 +248,7 @@ namespace ServerApp.Controllers
                 case UserRoles.OrganizationOwner: role = "OrganizationOwner"; break;
                 default:
                     throw new ArgumentException("Invalid role");
-                    
+
             };
 
             return role;
