@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,5 +21,8 @@ namespace Server.Models.MongoDbModels
         public string TaskDescription { get; set; }
         public List<string> UsersParticipating { get; set; }
         public bool Completed { get; set; }
+
+        [BsonIgnore]
+        public string TaskStringId { get; set; }
     }
 }

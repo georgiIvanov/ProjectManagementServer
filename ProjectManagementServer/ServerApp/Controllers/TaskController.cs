@@ -30,6 +30,27 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
+        [HttpPut]
+        public HttpResponseMessage AssignForTask(ProjectTask task, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+            User sqlUser;
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var tasksCollection = mongoDb.GetCollection<ProjectTask>(MongoCollections.Tasks);
+            var foundTask = tasksCollection.FindOneAs<ProjectTask>(Query.EQ("_id", new ObjectId(task.TaskStringId)));
+
+            foundTask.UsersParticipating.Add(sqlUser.Username);
+            tasksCollection.Save(foundTask);
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Edited = "Success" });
+        }
+
+
         public HttpResponseMessage AllTasksForProject(UserInProject user, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
