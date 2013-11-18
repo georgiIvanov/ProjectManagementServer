@@ -123,6 +123,11 @@ namespace ServerApp.Controllers
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Task does not exist.");
                 return responseMessage;
             }
+            if (foundTask.Completed)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Cannot assign for completed task.");
+                return responseMessage;
+            }
 
             foundTask.UsersParticipating.Add(sqlUser.Username);
             tasksCollection.Save(foundTask);
