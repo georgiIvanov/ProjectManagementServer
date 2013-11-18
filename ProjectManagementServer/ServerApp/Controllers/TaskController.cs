@@ -31,6 +31,26 @@ namespace ServerApp.Controllers
         }
 
         [HttpPut]
+        public HttpResponseMessage RemoveFromTask(ProjectTask task, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+            User sqlUser;
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var tasksCollection = mongoDb.GetCollection<ProjectTask>(MongoCollections.Tasks);
+            var foundTask = tasksCollection.FindOneAs<ProjectTask>(Query.EQ("_id", new ObjectId(task.TaskStringId)));
+
+            foundTask.UsersParticipating.Remove(sqlUser.Username);
+            tasksCollection.Save(foundTask);
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Edited = "Success" });
+        }
+
+        [HttpPut]
         public HttpResponseMessage AssignForTask(ProjectTask task, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
