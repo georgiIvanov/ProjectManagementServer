@@ -31,6 +31,56 @@ namespace ServerApp.Controllers
         }
 
         [HttpPut]
+        public HttpResponseMessage ReopenTask(ProjectTask task, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+            User sqlUser;
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var tasksCollection = mongoDb.GetCollection<ProjectTask>(MongoCollections.Tasks);
+            var foundTask = tasksCollection.FindOneAs<ProjectTask>(Query.EQ("_id", new ObjectId(task.TaskStringId)));
+            if (foundTask == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Task does not exist.");
+                return responseMessage;
+            }
+
+            foundTask.Completed = false;
+            tasksCollection.Save(foundTask);
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Edited = "Success" });
+        }
+
+        [HttpPut]
+        public HttpResponseMessage CompleteTask(ProjectTask task, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        {
+            HttpResponseMessage responseMessage;
+            User sqlUser;
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
+                return responseMessage;
+            }
+
+            var tasksCollection = mongoDb.GetCollection<ProjectTask>(MongoCollections.Tasks);
+            var foundTask = tasksCollection.FindOneAs<ProjectTask>(Query.EQ("_id", new ObjectId(task.TaskStringId)));
+            if (foundTask == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Task does not exist.");
+                return responseMessage;
+            }
+
+            foundTask.Completed = true;
+            tasksCollection.Save(foundTask);
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Edited = "Success" });
+        }
+
+        [HttpPut]
         public HttpResponseMessage RemoveFromTask(ProjectTask task, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
@@ -43,6 +93,11 @@ namespace ServerApp.Controllers
 
             var tasksCollection = mongoDb.GetCollection<ProjectTask>(MongoCollections.Tasks);
             var foundTask = tasksCollection.FindOneAs<ProjectTask>(Query.EQ("_id", new ObjectId(task.TaskStringId)));
+            if (foundTask == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Task does not exist.");
+                return responseMessage;
+            }
 
             foundTask.UsersParticipating.Remove(sqlUser.Username);
             tasksCollection.Save(foundTask);
@@ -63,6 +118,11 @@ namespace ServerApp.Controllers
 
             var tasksCollection = mongoDb.GetCollection<ProjectTask>(MongoCollections.Tasks);
             var foundTask = tasksCollection.FindOneAs<ProjectTask>(Query.EQ("_id", new ObjectId(task.TaskStringId)));
+            if (foundTask == null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Task does not exist.");
+                return responseMessage;
+            }
 
             foundTask.UsersParticipating.Add(sqlUser.Username);
             tasksCollection.Save(foundTask);
