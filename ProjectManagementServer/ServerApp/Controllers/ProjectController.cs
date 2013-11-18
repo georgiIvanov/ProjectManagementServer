@@ -76,8 +76,10 @@ namespace ServerApp.Controllers
                              Title = n.Title
                          }).ToList();
 
-            var allTasksCount = tasksCollection.AsQueryable<ProjectTask>().Count();
-            var allOpenTasks = tasksCollection.AsQueryable<ProjectTask>().Where(x => x.Completed == false).Count();
+            var allTasksCount = tasksCollection.AsQueryable<ProjectTask>()
+                .Where(x => x.ProjectName == project.ProjectName).Count();
+            var allOpenTasks = tasksCollection.AsQueryable<ProjectTask>()
+                .Where(x => x.Completed == false && x.ProjectName == project.ProjectName).Count();
             TableCell task = new TableCell()
             {
                 Title = string.Format("All: {0}, Open: {1}", allTasksCount, allOpenTasks)
