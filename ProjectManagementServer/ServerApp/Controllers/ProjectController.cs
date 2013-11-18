@@ -57,10 +57,11 @@ namespace ServerApp.Controllers
 
             MongoCollection<OpenIssue> issuesCollection = mongoDb.GetCollection<OpenIssue>(MongoCollections.Issues);
             MongoCollection<Note> notesCollection = mongoDb.GetCollection<Note>(MongoCollections.Notes);
+            MongoCollection<ProjectTask> tasksCollection = mongoDb.GetCollection<ProjectTask>(MongoCollections.Tasks);
 
             var issues = (from i in issuesCollection.AsQueryable<OpenIssue>()
                           where i.ProjectName == project.ProjectName
-                         select new IssueTableCell()
+                         select new TableCell()
                          {
                              Id = i.Id.ToString(),
                              Title = i.Title
@@ -69,13 +70,24 @@ namespace ServerApp.Controllers
 
             var notes = (from n in notesCollection.AsQueryable<Note>()
                          where n.ProjectName == project.ProjectName
-                         select new NoteTableCell()
+                         select new TableCell()
                          {
                              Id = n.Id.ToString(),
                              Title = n.Title
                          }).ToList();
 
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Issues = issues, Notes = notes, UserRoleInProject = postingUser.Role });
+            var allTasksCount = tasksCollection.AsQueryable<ProjectTask>().Count();
+            var allOpenTasks = tasksCollection.AsQueryable<ProjectTask>().Where(x => x.Completed == false).Count();
+            TableCell task = new TableCell()
+            {
+                Title = string.Format("All: {0}, Open: {1}", allTasksCount, allOpenTasks)
+            };
+
+
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, 
+                new { Issues = issues, Notes = notes, UserRoleInProject = postingUser.Role,
+                        Tasks = task
+                    });
         }
 
         public HttpResponseMessage PartInProject(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)

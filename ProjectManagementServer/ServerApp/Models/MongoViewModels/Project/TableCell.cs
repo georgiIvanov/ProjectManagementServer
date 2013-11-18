@@ -5,7 +5,7 @@ using System.Web;
 
 namespace ServerApp.Models.MongoViewModels.Project
 {
-    public class IssueTableCell
+    public class TableCell
     {
         public string Title { get; set; }
         public string Id { get; set; }
