@@ -34,7 +34,7 @@ namespace ServerApp.Controllers
         {
             HttpResponseMessage responseMessage;
             User sqlUser;
-            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser) || answer.Text.Length > 300)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
                 return responseMessage;
@@ -67,7 +67,7 @@ namespace ServerApp.Controllers
         {
             HttpResponseMessage responseMessage;
             User sqlUser;
-            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser) || postedIssue.Title.Length > 20 || postedIssue.Text.Length > 300)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
                 return responseMessage;

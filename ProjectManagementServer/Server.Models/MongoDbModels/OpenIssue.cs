@@ -15,9 +15,7 @@ namespace Server.Models.MongoDbModels
         public ObjectId Id { get; set; }
         // has to have proj id instead
         public string ProjectName { get; set; }
-        [StringLength(30)]
         public string Title { get; set; }
-        [StringLength(300)]
         public string Text { get; set; }
         public DateTime DatePosted { get; set; }
         public string ByUser { get; set; }

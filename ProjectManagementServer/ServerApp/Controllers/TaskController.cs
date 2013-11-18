@@ -34,7 +34,8 @@ namespace ServerApp.Controllers
         {
             HttpResponseMessage responseMessage;
             User sqlUser;
-            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser))
+            if (!ValidateCredentials.AuthKeyIsValid(db, authKey, out sqlUser) || 
+                task.TaskName.Length < 1 || task.TaskName.Length > 20 || task.TaskDescription.Length > 100)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
                 return responseMessage;

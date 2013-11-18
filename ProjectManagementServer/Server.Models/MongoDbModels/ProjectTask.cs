@@ -17,7 +17,6 @@ namespace Server.Models.MongoDbModels
         public string ProjectName { get; set; }
         [StringLength(20, MinimumLength=1)]
         public string TaskName { get; set; }
-        [StringLength(100)]
         public string TaskDescription { get; set; }
         public List<string> UsersParticipating { get; set; }
         public bool Completed { get; set; }
