@@ -56,7 +56,7 @@ namespace ServerApp.Controllers
             var openTasks = tasksCollection.AsQueryable<ProjectTask>().Where(x => x.ProjectName == user.ProjectName && x.Completed == false);
             var completedTasks = tasksCollection.AsQueryable<ProjectTask>().Where(x => x.ProjectName == user.ProjectName && x.Completed == true);
 
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Opentasks = openTasks, CompletedTasks = completedTasks });
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { OpenTasks = openTasks, CompletedTasks = completedTasks });
         }
 
         
