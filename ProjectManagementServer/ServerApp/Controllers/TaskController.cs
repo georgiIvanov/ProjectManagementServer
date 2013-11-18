@@ -60,7 +60,7 @@ namespace ServerApp.Controllers
             task.UsersParticipating = new List<string>();
             tasksCollection.Save(task);
 
-            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK);
+            return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Posted = "Success" });
         }
     }
 }
