@@ -54,6 +54,7 @@
     <Compile Include="MongoDbModels\Note.cs" />
     <Compile Include="MongoDbModels\OpenIssue.cs" />
     <Compile Include="MongoDbModels\Project.cs" />
+    <Compile Include="MongoDbModels\ProjectTask.cs" />
     <Compile Include="MongoDbModels\UsersOrganizations.cs" />
     <Compile Include="MongoDbModels\UsersProjects.cs" />
     <Compile Include="ObjectIdConverter.cs" />
