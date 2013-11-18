@@ -175,7 +175,6 @@
     <Compile Include="Models\GetProject.cs" />
     <Compile Include="Models\MongoViewModels\Project\EditNote.cs" />
     <Compile Include="Models\MongoViewModels\Project\TableCell.cs" />
-    <Compile Include="Models\MongoViewModels\Project\NoteTableCell.cs" />
     <Compile Include="Models\MongoViewModels\Project\UserInProject.cs" />
     <Compile Include="Models\MongoViewModels\InvitationViewModel.cs" />
     <Compile Include="Models\LoginResult.cs" />
