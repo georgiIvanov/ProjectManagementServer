@@ -156,6 +156,7 @@ namespace ServerApp.Controllers
 
             userInProject.Role = postData.SetAsManager ? UserRoles.ProjectManager : usersProfile.Role;
             usersProjects.Save(userInProject);
+            HistoryController.RecordHistoryEntry(userAssigning.OrganizationName, userAssigning.Username, string.Format("promoted {0} to Project Manager", userInProject.Username), userInProject.ProjectName);
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { User = userInProject });
         }
@@ -194,9 +195,13 @@ namespace ServerApp.Controllers
             }
 
 
+            HistoryController.RecordHistoryEntry(userAssigning.OrganizationName, userAssigning.Username,
+                string.Format("{0} {1}", usersProfile.Role < postData.UserRole ? "demoted" : "promoted", usersProfile.Username));
+
             usersProfile.Role = postData.UserRole;
             usersAndOrganizations.Save(usersProfile);
             ChangeUserRoleInProjects(usersProfile);
+            
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK);
         }
