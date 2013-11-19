@@ -32,7 +32,7 @@ namespace ServerApp.Controllers
         
         
 
-        [HttpGet]
+        [HttpPost]
         public HttpResponseMessage RecentEvents(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
@@ -69,7 +69,7 @@ namespace ServerApp.Controllers
             new { Events = recentEvents.ToString()});
         }
 
-        [HttpGet]
+        [HttpPost]
         public HttpResponseMessage GetFullInfo(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
