@@ -56,10 +56,7 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            StringBuilder recentEvents = new StringBuilder();
-
-            recentEvents.AppendLine("haha");
-            recentEvents.AppendLine("hehe");
+            string recentEvents = HistoryController.GetEventsForOrganization(postData.OrganizationName);
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
             new { Events = recentEvents.ToString()});

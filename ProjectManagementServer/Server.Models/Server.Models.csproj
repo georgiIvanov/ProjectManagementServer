@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Invitation.cs" />
     <Compile Include="MongoDbModels\AnswerIssue.cs" />
+    <Compile Include="MongoDbModels\HistoryEntry.cs" />
     <Compile Include="MongoDbModels\Note.cs" />
     <Compile Include="MongoDbModels\OpenIssue.cs" />
     <Compile Include="MongoDbModels\Project.cs" />

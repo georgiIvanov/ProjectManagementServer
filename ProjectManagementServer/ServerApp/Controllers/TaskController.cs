@@ -76,6 +76,7 @@ namespace ServerApp.Controllers
 
             foundTask.Completed = true;
             tasksCollection.Save(foundTask);
+            HistoryController.RecordHistoryEntry(foundTask.ProjectName, foundTask.OrganizationName, sqlUser.Username, "task completed");
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Edited = "Success" });
         }
@@ -98,7 +99,7 @@ namespace ServerApp.Controllers
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Task does not exist.");
                 return responseMessage;
             }
-
+            
             foundTask.UsersParticipating.Remove(sqlUser.Username);
             tasksCollection.Save(foundTask);
 

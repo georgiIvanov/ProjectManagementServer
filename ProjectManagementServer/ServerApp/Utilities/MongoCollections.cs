@@ -60,5 +60,11 @@ namespace ServerApp.Utilities
             get { return "Tasks"; }
             set { }
         }
+
+        public static string History
+        {
+            get { return "History"; }
+            set { }
+        }
     }
 }
