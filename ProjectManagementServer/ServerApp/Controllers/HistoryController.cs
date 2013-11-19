@@ -54,13 +54,13 @@ namespace ServerApp.Controllers
                 if (string.IsNullOrEmpty(item.ProjectName))
                 {
                     sb.AppendFormat("By {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded);
-                    sb.AppendLine();
                 }
                 else
                 {
                     sb.AppendFormat("In {0}, by {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded);
-                    sb.AppendLine();
                 }
+                sb.AppendLine(" - ");
+                sb.AppendLine();
             }
 
             return sb.ToString();
