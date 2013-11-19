@@ -156,7 +156,8 @@ namespace ServerApp.Controllers
 
             userInProject.Role = postData.SetAsManager ? UserRoles.ProjectManager : usersProfile.Role;
             usersProjects.Save(userInProject);
-            HistoryController.RecordHistoryEntry(userAssigning.OrganizationName, userAssigning.Username, string.Format("promoted {0} to Project Manager", userInProject.Username), userInProject.ProjectName);
+            HistoryController.RecordHistoryEntry(userAssigning.OrganizationName, userAssigning.Username, 
+                string.Format("{0} {1} as Project Manager", postData.SetAsManager ? "assigned" : "dissociated", userInProject.Username), userInProject.ProjectName);
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { User = userInProject });
         }
