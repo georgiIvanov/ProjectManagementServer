@@ -53,11 +53,11 @@ namespace ServerApp.Controllers
             {
                 if (string.IsNullOrEmpty(item.ProjectName))
                 {
-                    sb.AppendFormat("By {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded.Date);
+                    sb.AppendFormat("By {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded.ToShortDateString());
                 }
                 else
                 {
-                    sb.AppendFormat("In {0}, by {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded.Date);
+                    sb.AppendFormat("In {0}, by {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded.ToShortDateString());
                 }
                 sb.AppendLine();
                 sb.AppendLine(" - ");
