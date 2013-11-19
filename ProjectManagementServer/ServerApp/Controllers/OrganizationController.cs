@@ -29,10 +29,6 @@ namespace ServerApp.Controllers
             this.mongoDb = MongoClientFactory.GetDatabase();
         }
 
-        
-        
-
-        [HttpPost]
         public HttpResponseMessage RecentEvents(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
@@ -69,8 +65,7 @@ namespace ServerApp.Controllers
             new { Events = recentEvents.ToString()});
         }
 
-        [HttpPost]
-        public HttpResponseMessage GetFullInfo(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        public HttpResponseMessage FullInfo(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
 

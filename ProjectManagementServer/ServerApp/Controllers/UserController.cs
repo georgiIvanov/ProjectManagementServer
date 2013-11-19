@@ -223,7 +223,7 @@ namespace ServerApp.Controllers
             usersProjects.Update(query, update, UpdateFlags.Multi);
         }
 
-        public HttpResponseMessage GetAllUsersInOrganization(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        public HttpResponseMessage AllUsersInOrganization(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
 
@@ -232,7 +232,7 @@ namespace ServerApp.Controllers
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid information.");
                 return responseMessage;
             }
-            var queriedOrganization = GenericQueries.CheckOrganizationName(organizationName, mongoDb);
+            var queriedOrganization = GenericQueries.CheckOrganizationName(postData.OrganizationName, mongoDb);
             if (queriedOrganization == null)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid organization name.");
