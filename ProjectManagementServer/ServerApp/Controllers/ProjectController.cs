@@ -136,6 +136,8 @@ namespace ServerApp.Controllers
             }
 
             CreateUserProjectRelation(userAssigned, project);
+            HistoryController.RecordHistoryEntry(userAssigning.OrganizationName, userAssigning.Username,
+                string.Format("assigned {0} in {1}", userAssigned.Username, project.Name));
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Assigned = "Success" });
         }
@@ -186,7 +188,8 @@ namespace ServerApp.Controllers
             MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
 
             usersProjects.Remove(Query.EQ("Username", userRemoved.Username), RemoveFlags.Single);
-
+            HistoryController.RecordHistoryEntry(userAssigning.OrganizationName, userAssigning.Username,
+                string.Format("removed {0} from {1}", userRemoved.Username, project.Name));
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Removed = "Success" });
         }
@@ -221,6 +224,7 @@ namespace ServerApp.Controllers
             projects.Save(project);
 
             CreateUserProjectRelation(userCreating, project);
+            HistoryController.RecordHistoryEntry(queriedOrganization.Name, userCreating.Username, string.Format("created project - {0}", project.Name));
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK,
                 new { Created = "Success" });

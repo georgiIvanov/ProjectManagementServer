@@ -76,7 +76,7 @@ namespace ServerApp.Controllers
 
             foundTask.Completed = true;
             tasksCollection.Save(foundTask);
-            HistoryController.RecordHistoryEntry(foundTask.ProjectName, foundTask.OrganizationName, sqlUser.Username, "task completed");
+            HistoryController.RecordHistoryEntry(foundTask.OrganizationName, sqlUser.Username, "task completed", foundTask.ProjectName);
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Edited = "Success" });
         }

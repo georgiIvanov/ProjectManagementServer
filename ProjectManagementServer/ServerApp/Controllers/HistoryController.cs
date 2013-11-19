@@ -30,7 +30,7 @@ namespace ServerApp.Controllers
             historyCollection = mongoDb.GetCollection<HistoryEntry>(MongoCollections.History);
         }
 
-        public static void RecordHistoryEntry(string projectName, string organizationName, string byUser, string additionalInfo = "")
+        public static void RecordHistoryEntry(string organizationName, string byUser, string additionalInfo = "", string projectName = "")
         {
             HistoryEntry entry = new HistoryEntry()
             {
@@ -50,8 +50,16 @@ namespace ServerApp.Controllers
             StringBuilder sb = new StringBuilder();
             foreach (var item in entries)
             {
-                sb.AppendFormat("In {0}, by {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded);
-                sb.AppendLine();
+                if (string.IsNullOrEmpty(item.ProjectName))
+                {
+                    sb.AppendFormat("By {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded);
+                    sb.AppendLine();
+                }
+                else
+                {
+                    sb.AppendFormat("In {0}, by {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded);
+                    sb.AppendLine();
+                }
             }
 
             return sb.ToString();
