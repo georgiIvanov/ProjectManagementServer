@@ -38,7 +38,7 @@ namespace ServerApp.Controllers
                 ByUser = byUser,
                 Informaiton = additionalInfo,
                 OrganizationName = organizationName,
-                TimeRecorded = DateTime.Now
+                TimeRecorded = DateTime.Now.Date
             };
 
             historyCollection.Save(entry);
@@ -53,11 +53,11 @@ namespace ServerApp.Controllers
             {
                 if (string.IsNullOrEmpty(item.ProjectName))
                 {
-                    sb.AppendFormat("By {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded);
+                    sb.AppendFormat("By {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded.Date);
                 }
                 else
                 {
-                    sb.AppendFormat("In {0}, by {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded);
+                    sb.AppendFormat("In {0}, by {1} - {2}, at {3}", item.ProjectName, item.ByUser, item.Informaiton, item.TimeRecorded.Date);
                 }
                 sb.AppendLine();
                 sb.AppendLine(" - ");
