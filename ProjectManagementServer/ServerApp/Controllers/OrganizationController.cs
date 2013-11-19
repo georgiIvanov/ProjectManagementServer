@@ -33,7 +33,7 @@ namespace ServerApp.Controllers
         
 
         [HttpGet]
-        public HttpResponseMessage RecentEvents(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        public HttpResponseMessage RecentEvents(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
 
@@ -43,7 +43,7 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            var queriedOrganization = GenericQueries.CheckOrganizationName(organizationName, mongoDb);
+            var queriedOrganization = GenericQueries.CheckOrganizationName(postData.OrganizationName, mongoDb);
             if (queriedOrganization == null)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid name.");
@@ -70,7 +70,7 @@ namespace ServerApp.Controllers
         }
 
         [HttpGet]
-        public HttpResponseMessage GetFullInfo(string organizationName, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
+        public HttpResponseMessage GetFullInfo(UserInProject postData, [ValueProvider(typeof(HeaderValueProviderFactory<string>))] string authKey)
         {
             HttpResponseMessage responseMessage;
 
@@ -80,7 +80,7 @@ namespace ServerApp.Controllers
                 return responseMessage;
             }
 
-            var queriedOrganization = GenericQueries.CheckOrganizationName(organizationName, mongoDb);
+            var queriedOrganization = GenericQueries.CheckOrganizationName(postData.OrganizationName, mongoDb);
             if (queriedOrganization == null)
             {
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid name.");
