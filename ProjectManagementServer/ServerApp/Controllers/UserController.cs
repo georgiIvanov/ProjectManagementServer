@@ -196,7 +196,7 @@ namespace ServerApp.Controllers
 
 
             HistoryController.RecordHistoryEntry(userAssigning.OrganizationName, userAssigning.Username,
-                string.Format("{0} {1}", usersProfile.Role < postData.UserRole ? "demoted" : "promoted", usersProfile.Username));
+                string.Format("{0} {1}", usersProfile.Role < postData.UserRole ? "promoted" : "demoted", usersProfile.Username));
 
             usersProfile.Role = postData.UserRole;
             usersAndOrganizations.Save(usersProfile);
