@@ -47,7 +47,7 @@ namespace ServerApp.Controllers
         public static string GetEventsForOrganization(string organizationName)
         {
             var entries = historyCollection.FindAs<HistoryEntry>(Query.EQ("OrganizationName", organizationName))
-                .SetSortOrder(SortBy.Descending("TimeRecorded"));
+                .SetSortOrder(SortBy.Ascending("TimeRecorded"));
             StringBuilder sb = new StringBuilder();
             foreach (var item in entries)
             {
