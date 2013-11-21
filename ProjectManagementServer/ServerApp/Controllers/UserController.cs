@@ -181,7 +181,9 @@ namespace ServerApp.Controllers
 
             MongoCollection<UsersOrganizations> usersAndOrganizations = mongoDb.GetCollection<UsersOrganizations>(MongoCollections.UsersInOrganizations);
             UsersOrganizations userAssigning;
-            UsersOrganizations usersProfile = usersAndOrganizations.FindOneAs<UsersOrganizations>(Query.EQ("Username", postData.Username));
+            //UsersOrganizations usersProfile = usersAndOrganizations.FindOneAs<UsersOrganizations>(Query.EQ("Username", postData.Username));
+            UsersOrganizations usersProfile = usersAndOrganizations.AsQueryable<UsersOrganizations>()
+                .FirstOrDefault(x => x.Username == postData.Username && x.OrganizationName == postData.OrganizationName);
             GenericQueries.CheckUser(authKey, queriedOrganization, usersAndOrganizations, out userAssigning, UserRoles.OrganizationManager, db);
 
             if (usersProfile == null)
