@@ -110,7 +110,8 @@ namespace ServerApp.Controllers
                 }
             }
 
-            UsersOrganizations usersProfile = usersAndOrganizations.FindOneAs<UsersOrganizations>(Query.EQ("Username", postData.Username));
+            UsersOrganizations usersProfile = usersAndOrganizations.AsQueryable<UsersOrganizations>()
+                .FirstOrDefault(x => x.Username == postData.Username && x.OrganizationName == postData.OrganizationName);
 
             return responseMessage = this.Request.CreateResponse(HttpStatusCode.OK, new { Projects = allProjects.Values, Role = usersProfile.Role });
         }
