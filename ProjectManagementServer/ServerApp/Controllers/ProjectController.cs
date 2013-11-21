@@ -134,6 +134,16 @@ namespace ServerApp.Controllers
                 responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Invalid project.");
                 return responseMessage;
             }
+            MongoCollection<UsersProjects> usersProjects = mongoDb.GetCollection<UsersProjects>(MongoCollections.UsersInProjects);
+            UsersProjects possibleRelation = usersProjects.AsQueryable<UsersProjects>()
+                .FirstOrDefault(x => x.ProjectName == project.Name &&
+                    x.Username == project.Name &&
+                    x.OrganizationName == queriedOrganization.Name);
+            if (possibleRelation != null)
+            {
+                responseMessage = this.Request.CreateErrorResponse(HttpStatusCode.BadRequest, "User already in project.");
+                return responseMessage;
+            }
 
             CreateUserProjectRelation(userAssigned, project);
             HistoryController.RecordHistoryEntry(userAssigning.OrganizationName, userAssigning.Username,
